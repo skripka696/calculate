@@ -6,139 +6,20 @@
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
 from __future__ import unicode_literals
+from django.contrib.auth.models import User
 
 from django.db import models
 
 
-# class AuthGroup(models.Model):
-#     name = models.CharField(unique=True, max_length=80)
-#
-#     class Meta:
-#         managed = False
-#         db_table = 'auth_group'
-#
-#
-# class AuthGroupPermissions(models.Model):
-#     group_id = models.IntegerField()
-#     permission_id = models.IntegerField()
-#
-#     class Meta:
-#         managed = False
-#         db_table = 'auth_group_permissions'
-#         unique_together = (('group_id', 'permission_id'),)
-#
-#
-# class AuthMessage(models.Model):
-#     user_id = models.IntegerField()
-#     message = models.TextField()
-#
-#     class Meta:
-#         managed = False
-#         db_table = 'auth_message'
-#
-#
-# class AuthPermission(models.Model):
-#     name = models.CharField(max_length=50)
-#     content_type_id = models.IntegerField()
-#     codename = models.CharField(max_length=100)
-#
-#     class Meta:
-#         managed = False
-#         db_table = 'auth_permission'
-#         unique_together = (('content_type_id', 'codename'),)
-#
-#
-# class AuthUser(models.Model):
-#     username = models.CharField(unique=True, max_length=30)
-#     first_name = models.CharField(max_length=30)
-#     last_name = models.CharField(max_length=30)
-#     email = models.CharField(max_length=75)
-#     password = models.CharField(max_length=128)
-#     is_staff = models.IntegerField()
-#     is_active = models.IntegerField()
-#     is_superuser = models.IntegerField()
-#     last_login = models.DateTimeField()
-#     date_joined = models.DateTimeField()
-#
-#     class Meta:
-#         managed = False
-#         db_table = 'auth_user'
-#
-#
-# class AuthUserGroups(models.Model):
-#     user_id = models.IntegerField()
-#     group_id = models.IntegerField()
-#
-#     class Meta:
-#         managed = False
-#         db_table = 'auth_user_groups'
-#         unique_together = (('user_id', 'group_id'),)
-#
-#
-# class AuthUserUserPermissions(models.Model):
-#     user_id = models.IntegerField()
-#     permission_id = models.IntegerField()
-#
-#     class Meta:
-#         managed = False
-#         db_table = 'auth_user_user_permissions'
-#         unique_together = (('user_id', 'permission_id'),)
-#
-#
-# class DjangoAdminLog(models.Model):
-#     action_time = models.DateTimeField()
-#     user_id = models.IntegerField()
-#     content_type_id = models.IntegerField(blank=True, null=True)
-#     object_id = models.TextField(blank=True, null=True)
-#     object_repr = models.CharField(max_length=200)
-#     action_flag = models.SmallIntegerField()
-#     change_message = models.TextField()
-#
-#     class Meta:
-#         managed = False
-#         db_table = 'django_admin_log'
-#
-#
-# class DjangoContentType(models.Model):
-#     name = models.CharField(max_length=100)
-#     app_label = models.CharField(max_length=100)
-#     model = models.CharField(max_length=100)
-#
-#     class Meta:
-#         managed = False
-#         db_table = 'django_content_type'
-#         unique_together = (('app_label', 'model'),)
-#
-#
-# class DjangoSession(models.Model):
-#     session_key = models.CharField(primary_key=True, max_length=40)
-#     session_data = models.TextField()
-#     expire_date = models.DateTimeField()
-#
-#     class Meta:
-#         managed = False
-#         db_table = 'django_session'
-#
-#
-# class DjangoSite(models.Model):
-#     domain = models.CharField(max_length=100)
-#     name = models.CharField(max_length=50)
-#
-#     class Meta:
-#         managed = False
-#         db_table = 'django_site'
-
-
-class MercuryAccountdetails(models.Model):
-    account = models.ForeignKey('MercuryCorporateaccount', models.DO_NOTHING)
+class Accountdetails(models.Model):
+    account = models.ForeignKey('Corporateaccount', models.DO_NOTHING)
     email = models.CharField(max_length=75)
 
     class Meta:
         managed = False
-        db_table = 'mercury_accountdetails'
 
 
-class MercuryAgent(models.Model):
+class Agent(models.Model):
     name = models.CharField(max_length=200)
     office_address_1 = models.CharField(max_length=50)
     office_address_2 = models.CharField(max_length=50)
@@ -199,66 +80,59 @@ class MercuryAgent(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'mercury_agent'
 
 
-class MercuryAgentAssociations(models.Model):
+class AgentAssociations(models.Model):
     agent_id = models.IntegerField()
     agentassociations_id = models.IntegerField()
 
     class Meta:
         managed = False
-        db_table = 'mercury_agent_associations'
         unique_together = (('agent_id', 'agentassociations_id'),)
 
 
-class MercuryAgentCertifications(models.Model):
+class AgentCertifications(models.Model):
     agent_id = models.IntegerField()
     agentcertifications_id = models.IntegerField()
 
     class Meta:
         managed = False
-        db_table = 'mercury_agent_certifications'
         unique_together = (('agent_id', 'agentcertifications_id'),)
 
 
-class MercuryAgentFreightServiceCountries(models.Model):
-    agent = models.ForeignKey(MercuryAgent, models.DO_NOTHING)
+class AgentFreightServiceCountries(models.Model):
+    agent = models.ForeignKey(Agent, models.DO_NOTHING)
     country_id = models.IntegerField()
 
     class Meta:
         managed = False
-        db_table = 'mercury_agent_freight_service_countries'
         unique_together = (('agent', 'country_id'),)
 
 
-class MercuryAgentUsers(models.Model):
+class AgentUsers(models.Model):
     agent_id = models.IntegerField()
     user_id = models.IntegerField()
 
     class Meta:
         managed = False
-        db_table = 'mercury_agent_users'
 
 
-class MercuryAgentassociations(models.Model):
+class Agentassociations(models.Model):
     name = models.CharField(max_length=200)
 
     class Meta:
         managed = False
-        db_table = 'mercury_agentassociations'
 
 
-class MercuryAgentcertifications(models.Model):
+class Agentcertifications(models.Model):
     name = models.CharField(max_length=200)
 
     class Meta:
         managed = False
-        db_table = 'mercury_agentcertifications'
 
 
-class MercuryAgentdocument(models.Model):
-    agent = models.ForeignKey(MercuryAgent, models.DO_NOTHING)
+class Agentdocument(models.Model):
+    agent = models.ForeignKey(Agent, models.DO_NOTHING)
     upload_file = models.CharField(max_length=100)
     notes = models.CharField(max_length=400, blank=True, null=True)
     timestamp = models.DateTimeField()
@@ -267,34 +141,31 @@ class MercuryAgentdocument(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'mercury_agentdocument'
 
 
-class MercuryAgentlogo(models.Model):
-    agent = models.ForeignKey(MercuryAgent, models.DO_NOTHING)
+class Agentlogo(models.Model):
+    agent = models.ForeignKey(Agent, models.DO_NOTHING)
     logo = models.CharField(max_length=100)
 
     class Meta:
         managed = False
-        db_table = 'mercury_agentlogo'
 
 
-class MercuryAgentrating(models.Model):
+class Agentrating(models.Model):
     user_rating = models.IntegerField(blank=True, null=True)
     agent_id = models.IntegerField(blank=True, null=True)
     user_id = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'mercury_agentrating'
 
 
-class MercuryAirfreighttariff(models.Model):
+class Airfreighttariff(models.Model):
     currency_id = models.IntegerField()
     create_time = models.DateTimeField()
     archived = models.IntegerField()
     archive_time = models.DateTimeField(blank=True, null=True)
-    lane = models.ForeignKey('MercuryLane', models.DO_NOTHING)
+    lane = models.ForeignKey('Lane', models.DO_NOTHING)
     expiry = models.DateField(blank=True, null=True)
     comment = models.CharField(max_length=5000, blank=True, null=True)
     dthc = models.IntegerField()
@@ -303,67 +174,60 @@ class MercuryAirfreighttariff(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'mercury_airfreighttariff'
 
 
-class MercuryAirtariffpricepoint(models.Model):
-    tariff = models.ForeignKey(MercuryAirfreighttariff, models.DO_NOTHING)
+class Airtariffpricepoint(models.Model):
+    tariff = models.ForeignKey(Airfreighttariff, models.DO_NOTHING)
     min_units = models.FloatField()
     unit_price = models.FloatField()
 
     class Meta:
         managed = False
-        db_table = 'mercury_airtariffpricepoint'
 
 
-class MercuryClientuser(models.Model):
+class Clientuser(models.Model):
     client_id = models.IntegerField()
     user_id = models.IntegerField()
 
     class Meta:
         managed = False
-        db_table = 'mercury_clientuser'
 
 
-class MercuryClientuserCountries(models.Model):
-    clientuser = models.ForeignKey(MercuryClientuser, models.DO_NOTHING)
+class ClientuserCountries(models.Model):
+    clientuser = models.ForeignKey(Clientuser, models.DO_NOTHING)
     country_id = models.IntegerField()
 
     class Meta:
         managed = False
-        db_table = 'mercury_clientuser_countries'
         unique_together = (('clientuser', 'country_id'),)
 
 
-class MercuryClientuserPreferredAgents(models.Model):
-    clientuser = models.ForeignKey(MercuryClientuser, models.DO_NOTHING)
-    agent = models.ForeignKey(MercuryAgent, models.DO_NOTHING)
+class ClientuserPreferredAgents(models.Model):
+    clientuser = models.ForeignKey(Clientuser, models.DO_NOTHING)
+    agent = models.ForeignKey(Agent, models.DO_NOTHING)
 
     class Meta:
         managed = False
-        db_table = 'mercury_clientuser_preferred_agents'
         unique_together = (('clientuser', 'agent'),)
 
 
-class MercuryContinent(models.Model):
+class Continent(models.Model):
     name = models.CharField(max_length=200)
 
     class Meta:
         managed = False
-        db_table = 'mercury_continent'
 
 
-class MercuryContinentCountries(models.Model):
-    continent = models.ForeignKey(MercuryContinent, models.DO_NOTHING)
+class ContinentCountries(models.Model):
+    continent = models.ForeignKey(Continent, models.DO_NOTHING)
     country_id = models.IntegerField()
 
     class Meta:
         managed = False
-        db_table = 'mercury_continent_countries'
         unique_together = (('continent', 'country_id'),)
 
 
-class MercuryConversation(models.Model):
+class Conversation(models.Model):
     ofs_id = models.IntegerField()
     message = models.TextField()
     author_id = models.IntegerField()
@@ -371,46 +235,40 @@ class MercuryConversation(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'mercury_conversation'
 
 
-class MercuryCorporateaccount(models.Model):
+class Corporateaccount(models.Model):
     account_id = models.IntegerField(unique=True)
 
     class Meta:
         managed = False
-        db_table = 'mercury_corporateaccount'
 
 
-class MercuryCorporateaccountClient(models.Model):
+class CorporateaccountClient(models.Model):
     corporateaccount_id = models.IntegerField()
     user_id = models.IntegerField()
 
     class Meta:
         managed = False
-        db_table = 'mercury_corporateaccount_client'
         unique_together = (('corporateaccount_id', 'user_id'),)
 
 
-class MercuryCountry(models.Model):
+class Country(models.Model):
     name = models.CharField(max_length=200)
 
     class Meta:
         managed = False
-        db_table = 'mercury_country'
 
-
-class MercuryCurrency(models.Model):
+class Currency(models.Model):
     name = models.CharField(max_length=200)
     symbol = models.CharField(max_length=200)
     price_in_usd = models.FloatField()
 
     class Meta:
         managed = False
-        db_table = 'mercury_currency'
 
 
-class MercuryCurrencyhistory(models.Model):
+class Currencyhistory(models.Model):
     currency_id = models.IntegerField()
     price_in_usd = models.FloatField()
     archived = models.IntegerField()
@@ -418,11 +276,10 @@ class MercuryCurrencyhistory(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'mercury_currencyhistory'
         unique_together = (('currency_id', 'timestamp'),)
 
 
-class MercuryDiscount(models.Model):
+class Discount(models.Model):
     agent_id = models.IntegerField()
     user_id = models.IntegerField()
     multiplier = models.FloatField()
@@ -447,35 +304,32 @@ class MercuryDiscount(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'mercury_discount'
 
 
-class MercuryDiscounts(models.Model):
+class Discounts(models.Model):
     agent_id = models.IntegerField()
     user_id = models.IntegerField()
     multiplier = models.FloatField()
 
     class Meta:
         managed = False
-        db_table = 'mercury_discounts'
 
 
-class MercuryDocument(models.Model):
+class Document(models.Model):
     move_id = models.IntegerField()
     name = models.CharField(max_length=200)
     file = models.CharField(max_length=100)
 
     class Meta:
         managed = False
-        db_table = 'mercury_document'
 
 
-class MercuryFclfreighttariff(models.Model):
+class Fclfreighttariff(models.Model):
     currency_id = models.IntegerField()
     create_time = models.DateTimeField()
     archived = models.IntegerField()
     archive_time = models.DateTimeField(blank=True, null=True)
-    lane = models.ForeignKey('MercuryLane', models.DO_NOTHING)
+    lane = models.ForeignKey('Lane', models.DO_NOTHING)
     fcl_20_rate = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     fcl_40_rate = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     fcl_40hc_rate = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
@@ -487,14 +341,13 @@ class MercuryFclfreighttariff(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'mercury_fclfreighttariff'
 
 
-class MercuryFreighttariff(models.Model):
+class Freighttariff(models.Model):
     type = models.CharField(max_length=20)
-    agent = models.ForeignKey(MercuryAgent, models.DO_NOTHING)
-    origin_port = models.ForeignKey('MercuryPort', models.DO_NOTHING)
-    destination_port = models.ForeignKey('MercuryPort', models.DO_NOTHING)
+    agent = models.ForeignKey(Agent, models.DO_NOTHING)
+    origin_port = models.ForeignKey('Port', models.DO_NOTHING)
+    destination_port = models.ForeignKey('Port', models.DO_NOTHING)
     currency_id = models.IntegerField()
     rate = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     create_time = models.DateTimeField()
@@ -503,11 +356,10 @@ class MercuryFreighttariff(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'mercury_freighttariff'
 
 
-class MercuryFreighttariffsettings(models.Model):
-    agent = models.ForeignKey(MercuryAgent, models.DO_NOTHING)
+class Freighttariffsettings(models.Model):
+    agent = models.ForeignKey(Agent, models.DO_NOTHING)
     lcl_col1 = models.FloatField()
     lcl_col2 = models.FloatField()
     lcl_col3 = models.FloatField()
@@ -522,10 +374,9 @@ class MercuryFreighttariffsettings(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'mercury_freighttariffsettings'
 
 
-class MercuryGlobalsetting(models.Model):
+class Globalsetting(models.Model):
     code_timestamp = models.DateTimeField()
     tariff_rules = models.CharField(max_length=100)
     user_tutorial = models.CharField(max_length=100)
@@ -534,37 +385,34 @@ class MercuryGlobalsetting(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'mercury_globalsetting'
 
 
-class MercuryGlobalsettingEqDisabledAgents(models.Model):
-    globalsetting = models.ForeignKey(MercuryGlobalsetting, models.DO_NOTHING)
-    agent = models.ForeignKey(MercuryAgent, models.DO_NOTHING)
+class GlobalsettingEqDisabledAgents(models.Model):
+    globalsetting = models.ForeignKey(Globalsetting, models.DO_NOTHING)
+    agent = models.ForeignKey(Agent, models.DO_NOTHING)
 
     class Meta:
         managed = False
-        db_table = 'mercury_globalsetting_eq_disabled_agents'
         unique_together = (('globalsetting', 'agent'),)
 
 
-class MercuryLane(models.Model):
-    agent = models.ForeignKey(MercuryAgent, models.DO_NOTHING)
-    origin_port = models.ForeignKey('MercuryPort', models.DO_NOTHING)
-    destination_port = models.ForeignKey('MercuryPort', models.DO_NOTHING)
+class Lane(models.Model):
+    agent = models.ForeignKey(Agent, models.DO_NOTHING)
+    origin_port = models.ForeignKey('Port', models.DO_NOTHING)
+    destination_port = models.ForeignKey('Port', models.DO_NOTHING)
     row = models.IntegerField()
     archived = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'mercury_lane'
 
 
-class MercuryLclfreighttariff(models.Model):
+class Lclfreighttariff(models.Model):
     currency_id = models.IntegerField()
     create_time = models.DateTimeField()
     archived = models.IntegerField()
     archive_time = models.DateTimeField(blank=True, null=True)
-    lane = models.ForeignKey(MercuryLane, models.DO_NOTHING)
+    lane = models.ForeignKey(Lane, models.DO_NOTHING)
     expiry = models.DateField(blank=True, null=True)
     comment = models.CharField(max_length=5000, blank=True, null=True)
     dthc = models.IntegerField()
@@ -573,37 +421,33 @@ class MercuryLclfreighttariff(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'mercury_lclfreighttariff'
 
 
-class MercuryLcltariffpricepoint(models.Model):
-    tariff = models.ForeignKey(MercuryLclfreighttariff, models.DO_NOTHING)
+class Lcltariffpricepoint(models.Model):
+    tariff = models.ForeignKey(Lclfreighttariff, models.DO_NOTHING)
     min_units = models.FloatField()
     unit_price = models.FloatField()
 
     class Meta:
         managed = False
-        db_table = 'mercury_lcltariffpricepoint'
 
 
-class MercuryLocation(models.Model):
+class Location(models.Model):
     name = models.CharField(max_length=200)
 
     class Meta:
         managed = False
-        db_table = 'mercury_location'
 
 
-class MercuryLocationMarkets(models.Model):
+class LocationMarkets(models.Model):
     market_id = models.IntegerField()
     location_id = models.IntegerField()
 
     class Meta:
         managed = False
-        db_table = 'mercury_location_markets'
 
 
-class MercuryMarket(models.Model):
+class Market(models.Model):
     name = models.CharField(max_length=200)
     country_id = models.IntegerField()
     fcl_port = models.CharField(max_length=200)
@@ -613,20 +457,18 @@ class MercuryMarket(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'mercury_market'
 
 
-class MercuryMarketstats(models.Model):
+class Marketstats(models.Model):
     market_id = models.IntegerField(unique=True)
     import_view_count = models.IntegerField()
     export_view_count = models.IntegerField()
 
     class Meta:
         managed = False
-        db_table = 'mercury_marketstats'
 
 
-class MercuryMilestone(models.Model):
+class Milestone(models.Model):
     shipment_id = models.IntegerField()
     template_id = models.IntegerField()
     scheduled = models.DateField(blank=True, null=True)
@@ -634,20 +476,18 @@ class MercuryMilestone(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'mercury_milestone'
 
 
-class MercuryMilestonetemplate(models.Model):
+class Milestonetemplate(models.Model):
     name = models.CharField(max_length=200)
     mode = models.CharField(max_length=20)
     ordering = models.IntegerField()
 
     class Meta:
         managed = False
-        db_table = 'mercury_milestonetemplate'
 
 
-class MercuryMove(models.Model):
+class Move(models.Model):
     name = models.CharField(max_length=200)
     spouse_name = models.CharField(max_length=50)
     create_time = models.DateTimeField()
@@ -680,19 +520,17 @@ class MercuryMove(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'mercury_move'
 
 
-class MercuryNamedmodel(models.Model):
+class Namedmodel(models.Model):
     name = models.CharField(max_length=200)
 
     class Meta:
         managed = False
-        db_table = 'mercury_namedmodel'
 
 
-class MercuryNewshipment(models.Model):
-    ofs = models.ForeignKey('MercuryOrderforservice', models.DO_NOTHING)
+class Newshipment(models.Model):
+    ofs = models.ForeignKey('Orderforservice', models.DO_NOTHING)
     mode = models.CharField(max_length=20)
     declared_volume = models.FloatField()
     declared_weight = models.FloatField()
@@ -702,17 +540,16 @@ class MercuryNewshipment(models.Model):
     freight_quote_requested = models.IntegerField(blank=True, null=True)
     freight_quote_currency_id = models.IntegerField(blank=True, null=True)
     container_size = models.CharField(max_length=20, blank=True, null=True)
-    fcl_tariff = models.ForeignKey(MercuryFclfreighttariff, models.DO_NOTHING, blank=True, null=True)
-    lcl_tariff = models.ForeignKey(MercuryLclfreighttariff, models.DO_NOTHING, blank=True, null=True)
-    air_tariff = models.ForeignKey(MercuryAirfreighttariff, models.DO_NOTHING, blank=True, null=True)
+    fcl_tariff = models.ForeignKey(Fclfreighttariff, models.DO_NOTHING, blank=True, null=True)
+    lcl_tariff = models.ForeignKey(Lclfreighttariff, models.DO_NOTHING, blank=True, null=True)
+    air_tariff = models.ForeignKey(Airfreighttariff, models.DO_NOTHING, blank=True, null=True)
     service_type = models.CharField(max_length=20, blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'mercury_newshipment'
 
 
-class MercuryOfsdocument(models.Model):
+class Ofsdocument(models.Model):
     ofs_id = models.IntegerField()
     author_id = models.IntegerField()
     upload_file = models.CharField(max_length=100)
@@ -722,32 +559,29 @@ class MercuryOfsdocument(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'mercury_ofsdocument'
 
 
-class MercuryOfsfollower(models.Model):
-    ofs = models.ForeignKey('MercuryOrderforservice', models.DO_NOTHING)
+class Ofsfollower(models.Model):
+    ofs = models.ForeignKey('Orderforservice', models.DO_NOTHING)
     email = models.CharField(max_length=50)
     send_notification = models.IntegerField()
     added_by = models.CharField(max_length=40, blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'mercury_ofsfollower'
         unique_together = (('ofs', 'email'),)
 
 
-class MercuryOfsnotificationlist(models.Model):
+class Ofsnotificationlist(models.Model):
     user_id = models.IntegerField()
     email = models.CharField(max_length=50)
     default_notify = models.IntegerField()
 
     class Meta:
         managed = False
-        db_table = 'mercury_ofsnotificationlist'
 
 
-class MercuryOrderforservice(models.Model):
+class Orderforservice(models.Model):
     is_import = models.IntegerField()
     status = models.CharField(max_length=20, blank=True, null=True)
     source_market_id = models.IntegerField(blank=True, null=True)
@@ -776,10 +610,9 @@ class MercuryOrderforservice(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'mercury_orderforservice'
 
 
-class MercuryPenaltycard(models.Model):
+class Penaltycard(models.Model):
     agent_id = models.IntegerField()
     type = models.CharField(max_length=10)
     create_time = models.DateTimeField()
@@ -787,11 +620,10 @@ class MercuryPenaltycard(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'mercury_penaltycard'
 
 
-class MercuryPeraccountdiscount(models.Model):
-    account = models.ForeignKey(MercuryCorporateaccount, models.DO_NOTHING)
+class Peraccountdiscount(models.Model):
+    account = models.ForeignKey(Corporateaccount, models.DO_NOTHING)
     discount_id = models.IntegerField()
     multiplier = models.FloatField()
     flc_l_o = models.FloatField(blank=True, null=True)
@@ -815,48 +647,43 @@ class MercuryPeraccountdiscount(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'mercury_peraccountdiscount'
         unique_together = (('account', 'discount_id'),)
 
 
-class MercuryPort(models.Model):
+class Port(models.Model):
     name = models.CharField(max_length=200)
 
     class Meta:
         managed = False
-        db_table = 'mercury_port'
 
 
-class MercuryPortLocations(models.Model):
+class PortLocations(models.Model):
     port_id = models.IntegerField()
     location_id = models.IntegerField()
 
     class Meta:
         managed = False
-        db_table = 'mercury_port_locations'
 
 
-class MercuryPortMarkets(models.Model):
-    port = models.ForeignKey(MercuryPort, models.DO_NOTHING)
+class PortMarkets(models.Model):
+    port = models.ForeignKey(Port, models.DO_NOTHING)
     market_id = models.IntegerField()
 
     class Meta:
         managed = False
-        db_table = 'mercury_port_markets'
         unique_together = (('port', 'market_id'),)
 
 
-class MercuryPricinglog(models.Model):
+class Pricinglog(models.Model):
     user_id = models.IntegerField()
     request = models.CharField(max_length=4096)
     create_time = models.DateTimeField()
 
     class Meta:
         managed = False
-        db_table = 'mercury_pricinglog'
 
 
-class MercuryPricinglogdata(models.Model):
+class Pricinglogdata(models.Model):
     user_id = models.IntegerField()
     pricing_log_id = models.IntegerField()
     weight_unit = models.CharField(max_length=10, blank=True, null=True)
@@ -870,111 +697,101 @@ class MercuryPricinglogdata(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'mercury_pricinglogdata'
 
 
-class MercuryRfpcalculation(models.Model):
+class Rfpcalculation(models.Model):
     calculation_type = models.CharField(max_length=20)
     description = models.CharField(max_length=100)
     row_number = models.IntegerField()
-    setup = models.ForeignKey('MercuryRfpsetup', models.DO_NOTHING)
+    setup = models.ForeignKey('Rfpsetup', models.DO_NOTHING)
 
     class Meta:
         managed = False
-        db_table = 'mercury_rfpcalculation'
 
 
-class MercuryRfpextracalculation(models.Model):
+class Rfpextracalculation(models.Model):
     calculation_type = models.CharField(max_length=20)
     description = models.CharField(max_length=100)
     row_number = models.IntegerField()
-    rfp_lane = models.ForeignKey('MercuryRfplane', models.DO_NOTHING)
+    rfp_lane = models.ForeignKey('Rfplane', models.DO_NOTHING)
 
     class Meta:
         managed = False
-        db_table = 'mercury_rfpextracalculation'
 
 
-class MercuryRfpextravalue(models.Model):
+class Rfpextravalue(models.Model):
     value = models.FloatField()
-    size = models.ForeignKey('MercuryRfpsize', models.DO_NOTHING)
+    size = models.ForeignKey('Rfpsize', models.DO_NOTHING)
     row_number = models.IntegerField()
-    rfp_lane = models.ForeignKey('MercuryRfplane', models.DO_NOTHING)
+    rfp_lane = models.ForeignKey('Rfplane', models.DO_NOTHING)
 
     class Meta:
         managed = False
-        db_table = 'mercury_rfpextravalue'
 
 
-class MercuryRfpfile(models.Model):
+class Rfpfile(models.Model):
     client_id = models.IntegerField()
     assignee_id = models.IntegerField(blank=True, null=True)
     date_created = models.DateTimeField(blank=True, null=True)
     last_updated = models.DateTimeField(blank=True, null=True)
     name = models.CharField(max_length=60)
-    account = models.ForeignKey(MercuryCorporateaccount, models.DO_NOTHING, blank=True, null=True)
+    account = models.ForeignKey(Corporateaccount, models.DO_NOTHING, blank=True, null=True)
     currency_id = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'mercury_rfpfile'
 
 
-class MercuryRfplane(models.Model):
+class Rfplane(models.Model):
     origin_id = models.IntegerField(blank=True, null=True)
     destination_id = models.IntegerField(blank=True, null=True)
     origin_agent = models.IntegerField(blank=True, null=True)
     destination_agent = models.IntegerField(blank=True, null=True)
     freight_agent = models.IntegerField(blank=True, null=True)
-    file = models.ForeignKey(MercuryRfpfile, models.DO_NOTHING)
-    setup = models.ForeignKey('MercuryRfpsetup', models.DO_NOTHING)
+    file = models.ForeignKey(Rfpfile, models.DO_NOTHING)
+    setup = models.ForeignKey('Rfpsetup', models.DO_NOTHING)
     row_number = models.FloatField()
 
     class Meta:
         managed = False
-        db_table = 'mercury_rfplane'
 
 
-class MercuryRfpsetup(models.Model):
+class Rfpsetup(models.Model):
     weight_unit = models.CharField(max_length=4)
     volume_unit = models.CharField(max_length=4)
     rfp_type = models.CharField(max_length=8)
-    rfp_file = models.ForeignKey(MercuryRfpfile, models.DO_NOTHING)
+    rfp_file = models.ForeignKey(Rfpfile, models.DO_NOTHING)
     show_total_as = models.CharField(max_length=20)
     name = models.CharField(max_length=20)
     column_number = models.IntegerField()
 
     class Meta:
         managed = False
-        db_table = 'mercury_rfpsetup'
 
 
-class MercuryRfpsize(models.Model):
+class Rfpsize(models.Model):
     weight = models.FloatField()
     volume = models.FloatField()
-    setup = models.ForeignKey(MercuryRfpsetup, models.DO_NOTHING)
+    setup = models.ForeignKey(Rfpsetup, models.DO_NOTHING)
 
     class Meta:
         managed = False
-        db_table = 'mercury_rfpsize'
 
 
-class MercuryRfpvalue(models.Model):
+class Rfpvalue(models.Model):
     value = models.FloatField()
-    size = models.ForeignKey(MercuryRfpsize, models.DO_NOTHING)
+    size = models.ForeignKey(Rfpsize, models.DO_NOTHING)
     row_number = models.IntegerField()
 
     class Meta:
         managed = False
-        db_table = 'mercury_rfpvalue'
 
-
-class MercuryRoadfreighttariff(models.Model):
+class Roadfreighttariff(models.Model):
     currency_id = models.IntegerField()
     create_time = models.DateTimeField()
     archived = models.IntegerField()
     archive_time = models.DateTimeField(blank=True, null=True)
-    lane = models.ForeignKey(MercuryLane, models.DO_NOTHING)
+    lane = models.ForeignKey(Lane, models.DO_NOTHING)
     basis = models.CharField(max_length=20)
     expiry = models.DateField(blank=True, null=True)
     comment = models.CharField(max_length=1000, blank=True, null=True)
@@ -983,20 +800,18 @@ class MercuryRoadfreighttariff(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'mercury_roadfreighttariff'
 
 
-class MercuryRoadtariffpricepoint(models.Model):
-    tariff = models.ForeignKey(MercuryRoadfreighttariff, models.DO_NOTHING)
+class Roadtariffpricepoint(models.Model):
+    tariff = models.ForeignKey(Roadfreighttariff, models.DO_NOTHING)
     min_units = models.FloatField()
     unit_price = models.FloatField()
 
     class Meta:
         managed = False
-        db_table = 'mercury_roadtariffpricepoint'
 
 
-class MercuryShipment(models.Model):
+class Shipment(models.Model):
     move_id = models.IntegerField()
     mode = models.CharField(max_length=20)
     approval_status = models.CharField(max_length=20)
@@ -1012,10 +827,9 @@ class MercuryShipment(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'mercury_shipment'
 
 
-class MercuryShipmentallowance(models.Model):
+class Shipmentallowance(models.Model):
     move_id = models.IntegerField()
     mode = models.CharField(max_length=20)
     unit_a = models.CharField(max_length=20)
@@ -1025,10 +839,9 @@ class MercuryShipmentallowance(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'mercury_shipmentallowance'
 
 
-class MercuryShipmentmilestone(models.Model):
+class Shipmentmilestone(models.Model):
     shipment_id = models.IntegerField()
     template_id = models.IntegerField()
     scheduled = models.DateField(blank=True, null=True)
@@ -1036,10 +849,9 @@ class MercuryShipmentmilestone(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'mercury_shipmentmilestone'
 
 
-class MercuryShipmentparams(models.Model):
+class Shipmentparams(models.Model):
     pricing_log_data_id = models.IntegerField()
     slot = models.IntegerField()
     type = models.CharField(max_length=10)
@@ -1049,10 +861,9 @@ class MercuryShipmentparams(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'mercury_shipmentparams'
 
 
-class MercuryStatusentry(models.Model):
+class Statusentry(models.Model):
     move_id = models.IntegerField()
     user_id = models.IntegerField()
     timestamp = models.DateTimeField()
@@ -1061,37 +872,33 @@ class MercuryStatusentry(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'mercury_statusentry'
 
 
-class MercurySubscriber(models.Model):
+class Subscriber(models.Model):
     move_id = models.IntegerField()
     user_id = models.IntegerField()
     role = models.CharField(max_length=20)
 
     class Meta:
         managed = False
-        db_table = 'mercury_subscriber'
 
 
-class MercurySubscribers(models.Model):
+class Subscribers(models.Model):
     move_id = models.IntegerField()
     user_id = models.IntegerField()
     role = models.CharField(max_length=20)
 
     class Meta:
         managed = False
-        db_table = 'mercury_subscribers'
 
 
-class MercurySurvey(models.Model):
+class Survey(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'mercury_survey'
 
 
-class MercuryTariff(models.Model):
+class Tariff(models.Model):
     type = models.CharField(max_length=20)
     agent_id = models.IntegerField()
     market_id = models.IntegerField()
@@ -1116,10 +923,9 @@ class MercuryTariff(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'mercury_tariff'
 
 
-class MercuryTariffpricepoint(models.Model):
+class Tariffpricepoint(models.Model):
     tariff_id = models.IntegerField()
     min_units = models.FloatField()
     unit_price = models.FloatField()
@@ -1127,10 +933,9 @@ class MercuryTariffpricepoint(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'mercury_tariffpricepoint'
 
 
-class MercuryTariffroad(models.Model):
+class Tariffroad(models.Model):
     tariff_id = models.IntegerField()
     min_units = models.FloatField(blank=True, null=True)
     unit_price_blanket = models.FloatField(blank=True, null=True)
@@ -1140,10 +945,9 @@ class MercuryTariffroad(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'mercury_tariffroad'
 
 
-class MercuryTariffroadparams(models.Model):
+class Tariffroadparams(models.Model):
     tariff_id = models.IntegerField()
     warehouse = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     warehouse_format = models.CharField(max_length=20, blank=True, null=True)
@@ -1152,10 +956,9 @@ class MercuryTariffroadparams(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'mercury_tariffroadparams'
 
 
-class MercuryTariffsupplement(models.Model):
+class Tariffsupplement(models.Model):
     tariff_id = models.IntegerField()
     type_id = models.IntegerField()
     rate = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
@@ -1163,19 +966,17 @@ class MercuryTariffsupplement(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'mercury_tariffsupplement'
 
 
-class MercuryTariffsupplementtype(models.Model):
+class Tariffsupplementtype(models.Model):
     name = models.CharField(max_length=200)
     position = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'mercury_tariffsupplementtype'
 
 
-class MercuryTask(models.Model):
+class Task(models.Model):
     move_id = models.IntegerField()
     template_id = models.IntegerField()
     due_date = models.DateField(blank=True, null=True)
@@ -1183,10 +984,9 @@ class MercuryTask(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'mercury_task'
 
 
-class MercuryTasktemplate(models.Model):
+class Tasktemplate(models.Model):
     actor = models.CharField(max_length=20)
     name = models.CharField(max_length=200)
     task_trigger_id = models.IntegerField(blank=True, null=True)
@@ -1199,43 +999,29 @@ class MercuryTasktemplate(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'mercury_tasktemplate'
 
 
-class MercuryUserlist(models.Model):
+class Userlist(models.Model):
     name = models.CharField(max_length=30)
-    setting = models.ForeignKey(MercuryGlobalsetting, models.DO_NOTHING)
+    setting = models.ForeignKey(Globalsetting)
 
     class Meta:
         managed = False
-        db_table = 'mercury_userlist'
 
 
-class MercuryUserlistUsers(models.Model):
-    userlist = models.ForeignKey(MercuryUserlist, models.DO_NOTHING)
+class UserlistUsers(models.Model):
+    userlist = models.ForeignKey(Userlist)
     user_id = models.IntegerField()
 
     class Meta:
         managed = False
-        db_table = 'mercury_userlist_users'
         unique_together = (('userlist', 'user_id'),)
 
 
-class MercuryUserprofile(models.Model):
-    user_id = models.IntegerField(unique=True)
+class UserProfile(models.Model):
+    user_id = models.ForeignKey(User)
     company = models.CharField(max_length=100, blank=True, null=True)
     calculator_currency_id = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'mercury_userprofile'
-
-
-class SouthMigrationhistory(models.Model):
-    app_name = models.CharField(max_length=255)
-    migration = models.CharField(max_length=255)
-    applied = models.DateTimeField()
-
-    class Meta:
-        managed = False
-        db_table = 'south_migrationhistory'
