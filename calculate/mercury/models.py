@@ -228,9 +228,9 @@ class ContinentCountries(models.Model):
 
 
 class Conversation(models.Model):
-    ofs_id = models.IntegerField()
+    ofs = models.ForeignKey()
     message = models.TextField()
-    author_id = models.IntegerField()
+    author = models.ForeignKey(User)
     datetime = models.DateTimeField()
 
     class Meta:
@@ -238,20 +238,20 @@ class Conversation(models.Model):
 
 
 class Corporateaccount(models.Model):
-    account_id = models.IntegerField(unique=True)
+    account = models.ForeignKey(Peraccountdiscount, unique=True)
 
     class Meta:
         managed = False
 
 
-class CorporateaccountClient(models.Model):
-    corporateaccount_id = models.IntegerField()
-    user_id = models.IntegerField()
-
-    class Meta:
-        managed = False
-        unique_together = (('corporateaccount_id', 'user_id'),)
-
+# class CorporateaccountClient(models.Model):
+#     corporateaccount_id = models.IntegerField()
+#     user_id = models.IntegerField()
+#
+#     class Meta:
+#         managed = False
+#         unique_together = (('corporateaccount_id', 'user_id'),)
+#
 
 class Country(models.Model):
     name = models.CharField(max_length=200)
@@ -269,7 +269,7 @@ class Currency(models.Model):
 
 
 class Currencyhistory(models.Model):
-    currency_id = models.IntegerField()
+    currency = models.ForeignKey(Currency)
     price_in_usd = models.FloatField()
     archived = models.IntegerField()
     timestamp = models.DateTimeField()
@@ -280,8 +280,8 @@ class Currencyhistory(models.Model):
 
 
 class Discount(models.Model):
-    agent_id = models.IntegerField()
-    user_id = models.IntegerField()
+    agent = models.ForeignKey(Agent)
+    user = models.ForeignKey(User)
     multiplier = models.FloatField()
     flc_l_o = models.FloatField(blank=True, null=True)
     flc_c_o = models.FloatField(blank=True, null=True)
@@ -306,30 +306,30 @@ class Discount(models.Model):
         managed = False
 
 
-class Discounts(models.Model):
-    agent_id = models.IntegerField()
-    user_id = models.IntegerField()
-    multiplier = models.FloatField()
+# class Discounts(models.Model):
+#     agent = models.ForeignKey(Agent)
+#     user = models.ForeignKey(User)
+#     multiplier = models.FloatField()
+#
+#     class Meta:
+#         managed = False
 
-    class Meta:
-        managed = False
-
-
-class Document(models.Model):
-    move_id = models.IntegerField()
-    name = models.CharField(max_length=200)
-    file = models.CharField(max_length=100)
-
-    class Meta:
-        managed = False
+#
+# class Document(models.Model):
+#     move_id = models.IntegerField()
+#     name = models.CharField(max_length=200)
+#     file = models.CharField(max_length=100)
+#
+#     class Meta:
+#         managed = False
 
 
 class Fclfreighttariff(models.Model):
-    currency_id = models.IntegerField()
+    currency = models.ForeignKey(Currency)
     create_time = models.DateTimeField()
     archived = models.IntegerField()
     archive_time = models.DateTimeField(blank=True, null=True)
-    lane = models.ForeignKey('Lane', models.DO_NOTHING)
+    lane = models.ForeignKey(Lane)
     fcl_20_rate = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     fcl_40_rate = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     fcl_40hc_rate = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
@@ -343,23 +343,23 @@ class Fclfreighttariff(models.Model):
         managed = False
 
 
-class Freighttariff(models.Model):
-    type = models.CharField(max_length=20)
-    agent = models.ForeignKey(Agent, models.DO_NOTHING)
-    origin_port = models.ForeignKey('Port', models.DO_NOTHING)
-    destination_port = models.ForeignKey('Port', models.DO_NOTHING)
-    currency_id = models.IntegerField()
-    rate = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    create_time = models.DateTimeField()
-    archived = models.IntegerField()
-    archive_time = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        managed = False
+# class Freighttariff(models.Model):
+#     type = models.CharField(max_length=20)
+#     agent = models.ForeignKey(Agent)
+#     origin_port = models.ForeignKey('Port')
+#     destination_port = models.ForeignKey('Port')
+#     currency = models.ForeignKey(Currency)
+#     rate = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+#     create_time = models.DateTimeField()
+#     archived = models.IntegerField()
+#     archive_time = models.DateTimeField(blank=True, null=True)
+#
+#     class Meta:
+#         managed = False
 
 
 class Freighttariffsettings(models.Model):
-    agent = models.ForeignKey(Agent, models.DO_NOTHING)
+    agent = models.ForeignKey(Agent)
     lcl_col1 = models.FloatField()
     lcl_col2 = models.FloatField()
     lcl_col3 = models.FloatField()
@@ -369,7 +369,7 @@ class Freighttariffsettings(models.Model):
     air_col4 = models.FloatField()
     air_col5 = models.FloatField()
     air_col6 = models.FloatField()
-    currency_id = models.IntegerField()
+    currency = models.ForeignKey(Currency)
     road_basis = models.CharField(max_length=20)
 
     class Meta:
@@ -386,20 +386,20 @@ class Globalsetting(models.Model):
     class Meta:
         managed = False
 
-
-class GlobalsettingEqDisabledAgents(models.Model):
-    globalsetting = models.ForeignKey(Globalsetting, models.DO_NOTHING)
-    agent = models.ForeignKey(Agent, models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        unique_together = (('globalsetting', 'agent'),)
+#
+# class GlobalsettingEqDisabledAgents(models.Model):
+#     globalsetting = models.ForeignKey(Globalsetting, models.DO_NOTHING)
+#     agent = models.ForeignKey(Agent, models.DO_NOTHING)
+#
+#     class Meta:
+#         managed = False
+#         unique_together = (('globalsetting', 'agent'),)
 
 
 class Lane(models.Model):
-    agent = models.ForeignKey(Agent, models.DO_NOTHING)
-    origin_port = models.ForeignKey('Port', models.DO_NOTHING)
-    destination_port = models.ForeignKey('Port', models.DO_NOTHING)
+    agent = models.ForeignKey(Agent)
+    origin_port = models.ForeignKey('Port')
+    destination_port = models.ForeignKey('Port')
     row = models.IntegerField()
     archived = models.IntegerField(blank=True, null=True)
 
@@ -408,7 +408,7 @@ class Lane(models.Model):
 
 
 class Lclfreighttariff(models.Model):
-    currency_id = models.IntegerField()
+    currency = models.ForeignKey(Currency)
     create_time = models.DateTimeField()
     archived = models.IntegerField()
     archive_time = models.DateTimeField(blank=True, null=True)
@@ -424,7 +424,7 @@ class Lclfreighttariff(models.Model):
 
 
 class Lcltariffpricepoint(models.Model):
-    tariff = models.ForeignKey(Lclfreighttariff, models.DO_NOTHING)
+    tariff = models.ForeignKey(Lclfreighttariff)
     min_units = models.FloatField()
     unit_price = models.FloatField()
 
@@ -439,17 +439,17 @@ class Location(models.Model):
         managed = False
 
 
-class LocationMarkets(models.Model):
-    market_id = models.IntegerField()
-    location_id = models.IntegerField()
-
-    class Meta:
-        managed = False
+# class LocationMarkets(models.Model):
+#     market_id = models.IntegerField()
+#     location_id = models.IntegerField()
+#
+#     class Meta:
+#         managed = False
 
 
 class Market(models.Model):
     name = models.CharField(max_length=200)
-    country_id = models.IntegerField()
+    country = models.ForeignKey(Country)
     fcl_port = models.CharField(max_length=200)
     lcl_port = models.CharField(max_length=200)
     air_port = models.CharField(max_length=200)
@@ -459,172 +459,172 @@ class Market(models.Model):
         managed = False
 
 
-class Marketstats(models.Model):
-    market_id = models.IntegerField(unique=True)
-    import_view_count = models.IntegerField()
-    export_view_count = models.IntegerField()
+# class Marketstats(models.Model):
+#     market_id = models.IntegerField(unique=True)
+#     import_view_count = models.IntegerField()
+#     export_view_count = models.IntegerField()
+#
+#     class Meta:
+#         managed = False
+#
+#
+# # class Milestone(models.Model):
+#     shipment = models.ForeignKey(Shipment)
+#     template_id = models.IntegerField()
+#     scheduled = models.DateField(blank=True, null=True)
+#     actual = models.DateField(blank=True, null=True)
+#
+#     class Meta:
+#         managed = False
 
-    class Meta:
-        managed = False
+#
+# class Milestonetemplate(models.Model):
+#     name = models.CharField(max_length=200)
+#     mode = models.CharField(max_length=20)
+#     ordering = models.IntegerField()
+#
+#     class Meta:
+#         managed = False
 
-
-class Milestone(models.Model):
-    shipment_id = models.IntegerField()
-    template_id = models.IntegerField()
-    scheduled = models.DateField(blank=True, null=True)
-    actual = models.DateField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-
-
-class Milestonetemplate(models.Model):
-    name = models.CharField(max_length=200)
-    mode = models.CharField(max_length=20)
-    ordering = models.IntegerField()
-
-    class Meta:
-        managed = False
-
-
-class Move(models.Model):
-    name = models.CharField(max_length=200)
-    spouse_name = models.CharField(max_length=50)
-    create_time = models.DateTimeField()
-    estimate_date = models.DateField(blank=True, null=True)
-    active = models.IntegerField()
-    complete_time = models.DateTimeField(blank=True, null=True)
-    origin_market_id = models.IntegerField()
-    destination_market_id = models.IntegerField()
-    export_agent_id = models.IntegerField(blank=True, null=True)
-    import_agent_id = models.IntegerField(blank=True, null=True)
-    origin_address_1 = models.CharField(max_length=50)
-    origin_address_2 = models.CharField(max_length=50)
-    origin_city = models.CharField(max_length=50)
-    origin_postal_code = models.CharField(max_length=50)
-    origin_country = models.CharField(max_length=50)
-    destination_address_1 = models.CharField(max_length=50)
-    destination_address_2 = models.CharField(max_length=50)
-    destination_city = models.CharField(max_length=50)
-    destination_postal_code = models.CharField(max_length=50)
-    destination_country = models.CharField(max_length=50)
-    survey_estimator_score = models.IntegerField(blank=True, null=True)
-    survey_origin_coordinator_score = models.IntegerField(blank=True, null=True)
-    survey_packing_crew_score = models.IntegerField(blank=True, null=True)
-    survey_customs_consultation_score = models.IntegerField(blank=True, null=True)
-    survey_destination_coordinator_score = models.IntegerField(blank=True, null=True)
-    survey_delivery_crew_score = models.IntegerField(blank=True, null=True)
-    survey_facilitator_score = models.IntegerField(blank=True, null=True)
-    survey_comment = models.CharField(max_length=200)
-    allowance_notes = models.CharField(max_length=200, blank=True, null=True)
-
-    class Meta:
-        managed = False
-
-
-class Namedmodel(models.Model):
-    name = models.CharField(max_length=200)
-
-    class Meta:
-        managed = False
+#
+# class Move(models.Model):
+#     name = models.CharField(max_length=200)
+#     spouse_name = models.CharField(max_length=50)
+#     create_time = models.DateTimeField()
+#     estimate_date = models.DateField(blank=True, null=True)
+#     active = models.IntegerField()
+#     complete_time = models.DateTimeField(blank=True, null=True)
+#     origin_market = models.ForeignKey(Market)
+#     destination_market = models.ForeignKey(Market)
+#     export_agent = models.ForeignKey(Agent, blank=True, null=True)
+#     import_agent = models.ForeignKey(Agent, blank=True, null=True)
+#     origin_address_1 = models.CharField(max_length=50)
+#     origin_address_2 = models.CharField(max_length=50)
+#     origin_city = models.CharField(max_length=50)
+#     origin_postal_code = models.CharField(max_length=50)
+#     origin_country = models.CharField(max_length=50)
+#     destination_address_1 = models.CharField(max_length=50)
+#     destination_address_2 = models.CharField(max_length=50)
+#     destination_city = models.CharField(max_length=50)
+#     destination_postal_code = models.CharField(max_length=50)
+#     destination_country = models.CharField(max_length=50)
+#     survey_estimator_score = models.IntegerField(blank=True, null=True)
+#     survey_origin_coordinator_score = models.IntegerField(blank=True, null=True)
+#     survey_packing_crew_score = models.IntegerField(blank=True, null=True)
+#     survey_customs_consultation_score = models.IntegerField(blank=True, null=True)
+#     survey_destination_coordinator_score = models.IntegerField(blank=True, null=True)
+#     survey_delivery_crew_score = models.IntegerField(blank=True, null=True)
+#     survey_facilitator_score = models.IntegerField(blank=True, null=True)
+#     survey_comment = models.CharField(max_length=200)
+#     allowance_notes = models.CharField(max_length=200, blank=True, null=True)
+#
+#     class Meta:
+#         managed = False
 
 
-class Newshipment(models.Model):
-    ofs = models.ForeignKey('Orderforservice', models.DO_NOTHING)
-    mode = models.CharField(max_length=20)
-    declared_volume = models.FloatField()
-    declared_weight = models.FloatField()
-    tariff_id = models.IntegerField(blank=True, null=True)
-    freight_quote = models.FloatField()
-    discount = models.FloatField(blank=True, null=True)
-    freight_quote_requested = models.IntegerField(blank=True, null=True)
-    freight_quote_currency_id = models.IntegerField(blank=True, null=True)
-    container_size = models.CharField(max_length=20, blank=True, null=True)
-    fcl_tariff = models.ForeignKey(Fclfreighttariff, models.DO_NOTHING, blank=True, null=True)
-    lcl_tariff = models.ForeignKey(Lclfreighttariff, models.DO_NOTHING, blank=True, null=True)
-    air_tariff = models.ForeignKey(Airfreighttariff, models.DO_NOTHING, blank=True, null=True)
-    service_type = models.CharField(max_length=20, blank=True, null=True)
-
-    class Meta:
-        managed = False
+# class Namedmodel(models.Model):
+#     name = models.CharField(max_length=200)
+#
+#     class Meta:
+#         managed = False
 
 
-class Ofsdocument(models.Model):
-    ofs_id = models.IntegerField()
-    author_id = models.IntegerField()
-    upload_file = models.CharField(max_length=100)
-    notes = models.CharField(max_length=400, blank=True, null=True)
-    timestamp = models.DateTimeField()
-    block_agent = models.IntegerField(blank=True, null=True)
+# class Newshipment(models.Model):
+#     ofs = models.ForeignKey('Orderforservice')
+#     mode = models.CharField(max_length=20)
+#     declared_volume = models.FloatField()
+#     declared_weight = models.FloatField()
+#     tariff_id = models.IntegerField(blank=True, null=True)
+#     freight_quote = models.FloatField()
+#     discount = models.FloatField(blank=True, null=True)
+#     freight_quote_requested = models.IntegerField(blank=True, null=True)
+#     freight_quote_currency_id = models.IntegerField(blank=True, null=True)
+#     container_size = models.CharField(max_length=20, blank=True, null=True)
+#     fcl_tariff = models.ForeignKey(Fclfreighttariff, models.DO_NOTHING, blank=True, null=True)
+#     lcl_tariff = models.ForeignKey(Lclfreighttariff, models.DO_NOTHING, blank=True, null=True)
+#     air_tariff = models.ForeignKey(Airfreighttariff, models.DO_NOTHING, blank=True, null=True)
+#     service_type = models.CharField(max_length=20, blank=True, null=True)
+#
+#     class Meta:
+#         managed = False
+#
+#
+# class Ofsdocument(models.Model):
+#     ofs = models.ForeignKey(Orderforservice)
+#     author = models.ForeignKey(User)
+#     upload_file = models.CharField(max_length=100)
+#     notes = models.CharField(max_length=400, blank=True, null=True)
+#     timestamp = models.DateTimeField()
+#     block_agent = models.IntegerField(blank=True, null=True)
+#
+#     class Meta:
+#         managed = False
 
-    class Meta:
-        managed = False
-
-
-class Ofsfollower(models.Model):
-    ofs = models.ForeignKey('Orderforservice', models.DO_NOTHING)
-    email = models.CharField(max_length=50)
-    send_notification = models.IntegerField()
-    added_by = models.CharField(max_length=40, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        unique_together = (('ofs', 'email'),)
-
-
-class Ofsnotificationlist(models.Model):
-    user_id = models.IntegerField()
-    email = models.CharField(max_length=50)
-    default_notify = models.IntegerField()
-
-    class Meta:
-        managed = False
-
-
-class Orderforservice(models.Model):
-    is_import = models.IntegerField()
-    status = models.CharField(max_length=20, blank=True, null=True)
-    source_market_id = models.IntegerField(blank=True, null=True)
-    destination_market_id = models.IntegerField(blank=True, null=True)
-    transferee_name = models.CharField(max_length=100, blank=True, null=True)
-    comments = models.TextField(blank=True, null=True)
-    weight_unit = models.CharField(max_length=20, blank=True, null=True)
-    volume_unit = models.CharField(max_length=20, blank=True, null=True)
-    archived = models.IntegerField()
-    user_id = models.IntegerField(blank=True, null=True)
-    agent_id = models.IntegerField(blank=True, null=True)
-    corporate_account_id = models.IntegerField(blank=True, null=True)
-    cost_selected_agent = models.FloatField(blank=True, null=True)
-    cost_market_average = models.FloatField(blank=True, null=True)
-    metric = models.FloatField(blank=True, null=True)
-    discount = models.FloatField()
-    rating = models.IntegerField()
-    fxrate_timestamp = models.DateTimeField(blank=True, null=True)
-    date_created = models.DateTimeField(blank=True, null=True)
-    last_updated = models.DateTimeField(blank=True, null=True)
-    exclude_dthc = models.IntegerField(blank=True, null=True)
-    external_quote = models.IntegerField(blank=True, null=True)
-    is_freight = models.IntegerField(blank=True, null=True)
-    subuser_id = models.IntegerField(blank=True, null=True)
-    is_dtd = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        managed = False
+#
+# class Ofsfollower(models.Model):
+#     ofs = models.ForeignKey('Orderforservice')
+#     email = models.CharField(max_length=50)
+#     send_notification = models.IntegerField()
+#     added_by = models.CharField(max_length=40, blank=True, null=True)
+#
+#     class Meta:
+#         managed = False
+#         unique_together = (('ofs', 'email'),)
 
 
-class Penaltycard(models.Model):
-    agent_id = models.IntegerField()
-    type = models.CharField(max_length=10)
-    create_time = models.DateTimeField()
-    reason = models.TextField()
+# class Ofsnotificationlist(models.Model):
+#     user = models.ForeignKey(User)
+#     email = models.CharField(max_length=50)
+#     default_notify = models.IntegerField()
+#
+#     class Meta:
+#         managed = False
+#
+#
+# class Orderforservice(models.Model):
+#     is_import = models.IntegerField()
+#     status = models.CharField(max_length=20, blank=True, null=True)
+#     source_market = models.ForeignKey(Market, blank=True, null=True)  # ???
+#     destination_market = models.ForeignKey(Market, blank=True, null=True)  # ???
+#     transferee_name = models.CharField(max_length=100, blank=True, null=True)
+#     comments = models.TextField(blank=True, null=True)
+#     weight_unit = models.CharField(max_length=20, blank=True, null=True)
+#     volume_unit = models.CharField(max_length=20, blank=True, null=True)
+#     archived = models.IntegerField()
+#     user = models.ForeignKey(User, blank=True, null=True)
+#     agent = models.ForeignKey(User, blank=True, null=True)
+#     corporate_account = models.ForeignKey(Corporateaccount, blank=True, null=True)
+#     cost_selected_agent = models.FloatField(blank=True, null=True)
+#     cost_market_average = models.FloatField(blank=True, null=True)
+#     metric = models.FloatField(blank=True, null=True)
+#     discount = models.FloatField()
+#     rating = models.IntegerField()
+#     fxrate_timestamp = models.DateTimeField(blank=True, null=True)
+#     date_created = models.DateTimeField(blank=True, null=True)
+#     last_updated = models.DateTimeField(blank=True, null=True)
+#     exclude_dthc = models.IntegerField(blank=True, null=True)
+#     external_quote = models.IntegerField(blank=True, null=True)
+#     is_freight = models.IntegerField(blank=True, null=True)
+#     subuser = models.ForeignKey(User, blank=True, null=True)
+#     is_dtd = models.IntegerField(blank=True, null=True)
+#
+#     class Meta:
+#         managed = False
 
-    class Meta:
-        managed = False
+#
+# class Penaltycard(models.Model):
+#     agent = models.ForeignKey(Agent)
+#     type = models.CharField(max_length=10)
+#     create_time = models.DateTimeField()
+#     reason = models.TextField()
+#
+#     class Meta:
+#         managed = False
 
 
 class Peraccountdiscount(models.Model):
-    account = models.ForeignKey(Corporateaccount, models.DO_NOTHING)
-    discount_id = models.IntegerField()
+    account = models.ForeignKey(Corporateaccount)
+    discount = models.ForeignKey(Discount)
     multiplier = models.FloatField()
     flc_l_o = models.FloatField(blank=True, null=True)
     flc_c_o = models.FloatField(blank=True, null=True)
@@ -657,137 +657,137 @@ class Port(models.Model):
         managed = False
 
 
-class PortLocations(models.Model):
-    port_id = models.IntegerField()
-    location_id = models.IntegerField()
-
-    class Meta:
-        managed = False
-
-
-class PortMarkets(models.Model):
-    port = models.ForeignKey(Port, models.DO_NOTHING)
-    market_id = models.IntegerField()
-
-    class Meta:
-        managed = False
-        unique_together = (('port', 'market_id'),)
+# class PortLocations(models.Model):
+#     port_id = models.IntegerField()
+#     location_id = models.IntegerField()
+#
+#     class Meta:
+#         managed = False
 
 
-class Pricinglog(models.Model):
-    user_id = models.IntegerField()
-    request = models.CharField(max_length=4096)
-    create_time = models.DateTimeField()
-
-    class Meta:
-        managed = False
-
-
-class Pricinglogdata(models.Model):
-    user_id = models.IntegerField()
-    pricing_log_id = models.IntegerField()
-    weight_unit = models.CharField(max_length=10, blank=True, null=True)
-    volume_unit = models.CharField(max_length=10, blank=True, null=True)
-    currency = models.IntegerField()
-    import_market = models.IntegerField(blank=True, null=True)
-    export_market = models.IntegerField(blank=True, null=True)
-    account = models.CharField(max_length=10, blank=True, null=True)
-    include_dthc = models.IntegerField(blank=True, null=True)
-    create_time = models.DateTimeField()
-
-    class Meta:
-        managed = False
+# class PortMarkets(models.Model):
+#     port = models.ForeignKey(Port, models.DO_NOTHING)
+#     market = models.ForeignKey(Market)  # ???
+#
+#     class Meta:
+#         managed = False
+#         unique_together = (('port', 'market_id'),)
 
 
-class Rfpcalculation(models.Model):
-    calculation_type = models.CharField(max_length=20)
-    description = models.CharField(max_length=100)
-    row_number = models.IntegerField()
-    setup = models.ForeignKey('Rfpsetup', models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-
-
-class Rfpextracalculation(models.Model):
-    calculation_type = models.CharField(max_length=20)
-    description = models.CharField(max_length=100)
-    row_number = models.IntegerField()
-    rfp_lane = models.ForeignKey('Rfplane', models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-
-
-class Rfpextravalue(models.Model):
-    value = models.FloatField()
-    size = models.ForeignKey('Rfpsize', models.DO_NOTHING)
-    row_number = models.IntegerField()
-    rfp_lane = models.ForeignKey('Rfplane', models.DO_NOTHING)
-
-    class Meta:
-        managed = False
+# class Pricinglog(models.Model):
+#     user = models.ForeignKey(User)
+#     request = models.CharField(max_length=4096)
+#     create_time = models.DateTimeField()
+#
+#     class Meta:
+#         managed = False
+#
+#
+# class Pricinglogdata(models.Model):
+#     user = models.ForeignKey(User)
+#     pricing_log = models.ForeignKey(Pricinglog)  #  ???
+#     weight_unit = models.CharField(max_length=10, blank=True, null=True)
+#     volume_unit = models.CharField(max_length=10, blank=True, null=True)
+#     currency = models.IntegerField()
+#     import_market = models.IntegerField(blank=True, null=True)
+#     export_market = models.IntegerField(blank=True, null=True)
+#     account = models.CharField(max_length=10, blank=True, null=True)
+#     include_dthc = models.IntegerField(blank=True, null=True)
+#     create_time = models.DateTimeField()
+#
+#     class Meta:
+#         managed = False
 
 
-class Rfpfile(models.Model):
-    client_id = models.IntegerField()
-    assignee_id = models.IntegerField(blank=True, null=True)
-    date_created = models.DateTimeField(blank=True, null=True)
-    last_updated = models.DateTimeField(blank=True, null=True)
-    name = models.CharField(max_length=60)
-    account = models.ForeignKey(Corporateaccount, models.DO_NOTHING, blank=True, null=True)
-    currency_id = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-
-
-class Rfplane(models.Model):
-    origin_id = models.IntegerField(blank=True, null=True)
-    destination_id = models.IntegerField(blank=True, null=True)
-    origin_agent = models.IntegerField(blank=True, null=True)
-    destination_agent = models.IntegerField(blank=True, null=True)
-    freight_agent = models.IntegerField(blank=True, null=True)
-    file = models.ForeignKey(Rfpfile, models.DO_NOTHING)
-    setup = models.ForeignKey('Rfpsetup', models.DO_NOTHING)
-    row_number = models.FloatField()
-
-    class Meta:
-        managed = False
-
-
-class Rfpsetup(models.Model):
-    weight_unit = models.CharField(max_length=4)
-    volume_unit = models.CharField(max_length=4)
-    rfp_type = models.CharField(max_length=8)
-    rfp_file = models.ForeignKey(Rfpfile, models.DO_NOTHING)
-    show_total_as = models.CharField(max_length=20)
-    name = models.CharField(max_length=20)
-    column_number = models.IntegerField()
-
-    class Meta:
-        managed = False
-
-
-class Rfpsize(models.Model):
-    weight = models.FloatField()
-    volume = models.FloatField()
-    setup = models.ForeignKey(Rfpsetup, models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-
-
-class Rfpvalue(models.Model):
-    value = models.FloatField()
-    size = models.ForeignKey(Rfpsize, models.DO_NOTHING)
-    row_number = models.IntegerField()
-
-    class Meta:
-        managed = False
+# class Rfpcalculation(models.Model):
+#     calculation_type = models.CharField(max_length=20)
+#     description = models.CharField(max_length=100)
+#     row_number = models.IntegerField()
+#     setup = models.ForeignKey('Rfpsetup')
+#
+#     class Meta:
+#         managed = False
+#
+#
+# class Rfpextracalculation(models.Model):
+#     calculation_type = models.CharField(max_length=20)
+#     description = models.CharField(max_length=100)
+#     row_number = models.IntegerField()
+#     rfp_lane = models.ForeignKey('Rfplane')
+#
+#     class Meta:
+#         managed = False
+#
+#
+# class Rfpextravalue(models.Model):
+#     value = models.FloatField()
+#     size = models.ForeignKey('Rfpsize')
+#     row_number = models.IntegerField()
+#     rfp_lane = models.ForeignKey('Rfplane')
+#
+#     class Meta:
+#         managed = False
+#
+#
+# class Rfpfile(models.Model):
+#     client_id = models.IntegerField()  # ???
+#     assignee_id = models.IntegerField(blank=True, null=True)  # ???
+#     date_created = models.DateTimeField(blank=True, null=True)
+#     last_updated = models.DateTimeField(blank=True, null=True)
+#     name = models.CharField(max_length=60)
+#     account = models.ForeignKey(Corporateaccount, blank=True, null=True)
+#     currency= models.ForeignKey(Currency, blank=True, null=True)
+#
+#     class Meta:
+#         managed = False
+#
+#
+# class Rfplane(models.Model):
+#     origin_id = models.IntegerField(blank=True, null=True)  # ???
+#     destination_id = models.IntegerField(blank=True, null=True)  # ???
+#     origin_agent = models.IntegerField(blank=True, null=True)
+#     destination_agent = models.IntegerField(blank=True, null=True)
+#     freight_agent = models.IntegerField(blank=True, null=True)
+#     file = models.ForeignKey(Rfpfile)
+#     setup = models.ForeignKey('Rfpsetup')
+#     row_number = models.FloatField()
+#
+#     class Meta:
+#         managed = False
+#
+#
+# class Rfpsetup(models.Model):
+#     weight_unit = models.CharField(max_length=4)
+#     volume_unit = models.CharField(max_length=4)
+#     rfp_type = models.CharField(max_length=8)
+#     rfp_file = models.ForeignKey(Rfpfile)
+#     show_total_as = models.CharField(max_length=20)
+#     name = models.CharField(max_length=20)
+#     column_number = models.IntegerField()
+#
+#     class Meta:
+#         managed = False
+#
+#
+# class Rfpsize(models.Model):
+#     weight = models.FloatField()
+#     volume = models.FloatField()
+#     setup = models.ForeignKey(Rfpsetup)
+#
+#     class Meta:
+#         managed = False
+#
+#
+# class Rfpvalue(models.Model):
+#     value = models.FloatField()
+#     size = models.ForeignKey(Rfpsize)
+#     row_number = models.IntegerField()
+#
+#     class Meta:
+#         managed = False
 
 class Roadfreighttariff(models.Model):
-    currency_id = models.IntegerField()
+    currency = models.ForeignKey(Currency)
     create_time = models.DateTimeField()
     archived = models.IntegerField()
     archive_time = models.DateTimeField(blank=True, null=True)
@@ -803,7 +803,7 @@ class Roadfreighttariff(models.Model):
 
 
 class Roadtariffpricepoint(models.Model):
-    tariff = models.ForeignKey(Roadfreighttariff, models.DO_NOTHING)
+    tariff = models.ForeignKey(Roadfreighttariff)
     min_units = models.FloatField()
     unit_price = models.FloatField()
 
@@ -812,7 +812,7 @@ class Roadtariffpricepoint(models.Model):
 
 
 class Shipment(models.Model):
-    move_id = models.IntegerField()
+    move = models.ForeignKey(Move)
     mode = models.CharField(max_length=20)
     approval_status = models.CharField(max_length=20)
     tariff_export_id = models.IntegerField(blank=True, null=True)
@@ -829,85 +829,85 @@ class Shipment(models.Model):
         managed = False
 
 
-class Shipmentallowance(models.Model):
-    move_id = models.IntegerField()
-    mode = models.CharField(max_length=20)
-    unit_a = models.CharField(max_length=20)
-    quantity_a = models.FloatField()
-    unit_b = models.CharField(max_length=20, blank=True, null=True)
-    quantity_b = models.FloatField()
-
-    class Meta:
-        managed = False
-
-
-class Shipmentmilestone(models.Model):
-    shipment_id = models.IntegerField()
-    template_id = models.IntegerField()
-    scheduled = models.DateField(blank=True, null=True)
-    actual = models.DateField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-
-
-class Shipmentparams(models.Model):
-    pricing_log_data_id = models.IntegerField()
-    slot = models.IntegerField()
-    type = models.CharField(max_length=10)
-    weight = models.CharField(max_length=10, blank=True, null=True)
-    volume = models.CharField(max_length=10, blank=True, null=True)
-    container = models.CharField(max_length=10, blank=True, null=True)
-
-    class Meta:
-        managed = False
+# class Shipmentallowance(models.Model):
+#     move_id = models.IntegerField()
+#     mode = models.CharField(max_length=20)
+#     unit_a = models.CharField(max_length=20)
+#     quantity_a = models.FloatField()
+#     unit_b = models.CharField(max_length=20, blank=True, null=True)
+#     quantity_b = models.FloatField()
+#
+#     class Meta:
+#         managed = False
+#
+#
+# class Shipmentmilestone(models.Model):
+#     shipment_id = models.IntegerField()
+#     template_id = models.IntegerField()
+#     scheduled = models.DateField(blank=True, null=True)
+#     actual = models.DateField(blank=True, null=True)
+#
+#     class Meta:
+#         managed = False
 
 
-class Statusentry(models.Model):
-    move_id = models.IntegerField()
-    user_id = models.IntegerField()
-    timestamp = models.DateTimeField()
-    details = models.CharField(max_length=1024)
-    type = models.CharField(max_length=20)
+# class Shipmentparams(models.Model):
+#     pricing_log_data_id = models.IntegerField()
+#     slot = models.IntegerField()
+#     type = models.CharField(max_length=10)
+#     weight = models.CharField(max_length=10, blank=True, null=True)
+#     volume = models.CharField(max_length=10, blank=True, null=True)
+#     container = models.CharField(max_length=10, blank=True, null=True)
+#
+#     class Meta:
+#         managed = False
+# #
+#
+# class Statusentry(models.Model):
+#     move_id = models.IntegerField()
+#     user_id = models.IntegerField()
+#     timestamp = models.DateTimeField()
+#     details = models.CharField(max_length=1024)
+#     type = models.CharField(max_length=20)
+#
+#     class Meta:
+#         managed = False
 
-    class Meta:
-        managed = False
+# ????
+# class Subscriber(models.Model):
+#     move_id = models.IntegerField()
+#     user_id = models.IntegerField()
+#     role = models.CharField(max_length=20)
+#
+#     class Meta:
+#         managed = False
+
+#
+# class Subscribers(models.Model):
+#     move_id = models.IntegerField()
+#     user_id = models.IntegerField()
+#     role = models.CharField(max_length=20)
+#
+#     class Meta:
+#         managed = False
 
 
-class Subscriber(models.Model):
-    move_id = models.IntegerField()
-    user_id = models.IntegerField()
-    role = models.CharField(max_length=20)
-
-    class Meta:
-        managed = False
-
-
-class Subscribers(models.Model):
-    move_id = models.IntegerField()
-    user_id = models.IntegerField()
-    role = models.CharField(max_length=20)
-
-    class Meta:
-        managed = False
-
-
-class Survey(models.Model):
-
-    class Meta:
-        managed = False
+# class Survey(models.Model):
+#
+#     class Meta:
+#         managed = False
 
 
 class Tariff(models.Model):
     type = models.CharField(max_length=20)
-    agent_id = models.IntegerField()
-    market_id = models.IntegerField()
+    agent = models.ForeignKey(Agent)
+    market = models.ForeignKey(Market)
     create_time = models.DateTimeField()
     archived = models.IntegerField()
     archive_time = models.DateTimeField(blank=True, null=True)
     basis = models.CharField(max_length=20)
     minimum_density = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    currency_id = models.IntegerField(blank=True, null=True)
+    currency = models.ForeignKey(Currency)
     thc = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     thc_40 = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     basket_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
@@ -926,7 +926,7 @@ class Tariff(models.Model):
 
 
 class Tariffpricepoint(models.Model):
-    tariff_id = models.IntegerField()
+    tariff = models.ForeignKey(Tariff)
     min_units = models.FloatField()
     unit_price = models.FloatField()
     export = models.IntegerField()
@@ -934,9 +934,9 @@ class Tariffpricepoint(models.Model):
     class Meta:
         managed = False
 
-
+# ????
 class Tariffroad(models.Model):
-    tariff_id = models.IntegerField()
+    tariff = models.ForeignKey(Tariff)
     min_units = models.FloatField(blank=True, null=True)
     unit_price_blanket = models.FloatField(blank=True, null=True)
     unit_price_export = models.FloatField(blank=True, null=True)
@@ -948,7 +948,7 @@ class Tariffroad(models.Model):
 
 
 class Tariffroadparams(models.Model):
-    tariff_id = models.IntegerField()
+    tariff_id = models.ForeignKey(Tariff)
     warehouse = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     warehouse_format = models.CharField(max_length=20, blank=True, null=True)
     custom_clearance = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
@@ -959,8 +959,8 @@ class Tariffroadparams(models.Model):
 
 
 class Tariffsupplement(models.Model):
-    tariff_id = models.IntegerField()
-    type_id = models.IntegerField()
+    tariff = models.ForeignKey(Tariff)
+    type = models.ManyToManyField(Tariffsupplementtype)
     rate = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     rate_basis = models.CharField(max_length=300, blank=True, null=True)
 
@@ -975,30 +975,30 @@ class Tariffsupplementtype(models.Model):
     class Meta:
         managed = False
 
+#
+# class Task(models.Model):
+#     move_id = models.IntegerField()
+#     template_id = models.IntegerField()
+#     due_date = models.DateField(blank=True, null=True)
+#     completed_date = models.DateField(blank=True, null=True)
+#
+#     class Meta:
+#         managed = False
+#
 
-class Task(models.Model):
-    move_id = models.IntegerField()
-    template_id = models.IntegerField()
-    due_date = models.DateField(blank=True, null=True)
-    completed_date = models.DateField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-
-
-class Tasktemplate(models.Model):
-    actor = models.CharField(max_length=20)
-    name = models.CharField(max_length=200)
-    task_trigger_id = models.IntegerField(blank=True, null=True)
-    shipment_mode = models.CharField(max_length=20, blank=True, null=True)
-    trigger_condition = models.CharField(max_length=20, blank=True, null=True)
-    ordering = models.IntegerField()
-    default_delay = models.IntegerField()
-    hidden = models.IntegerField()
-    milestone = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        managed = False
+# class Tasktemplate(models.Model):
+#     actor = models.CharField(max_length=20)
+#     name = models.CharField(max_length=200)
+#     task_trigger_id = models.IntegerField(blank=True, null=True)
+#     shipment_mode = models.CharField(max_length=20, blank=True, null=True)
+#     trigger_condition = models.CharField(max_length=20, blank=True, null=True)
+#     ordering = models.IntegerField()
+#     default_delay = models.IntegerField()
+#     hidden = models.IntegerField()
+#     milestone = models.IntegerField(blank=True, null=True)
+#
+#     class Meta:
+#         managed = False
 
 
 class Userlist(models.Model):
@@ -1009,19 +1009,19 @@ class Userlist(models.Model):
         managed = False
 
 
-class UserlistUsers(models.Model):
-    userlist = models.ForeignKey(Userlist)
-    user_id = models.IntegerField()
-
-    class Meta:
-        managed = False
-        unique_together = (('userlist', 'user_id'),)
+# class UserlistUsers(models.Model):
+#     userlist = models.ForeignKey(Userlist)
+#     user_id = models.IntegerField()
+#
+#     class Meta:
+#         managed = False
+#         unique_together = (('userlist', 'user_id'),)
 
 
 class UserProfile(models.Model):
-    user_id = models.ForeignKey(User)
+    user = models.ForeignKey(User)
     company = models.CharField(max_length=100, blank=True, null=True)
-    calculator_currency_id = models.IntegerField(blank=True, null=True)
+    calculator_currency = models.ForeignKey(Currency)
 
     class Meta:
         managed = False
