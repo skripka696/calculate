@@ -47,6 +47,12 @@ class Corporateaccount(models.Model):
         managed = False
 
 
+class Agentassociations(models.Model):
+    name = models.CharField(max_length=200)
+#
+#     class Meta:
+#         managed = False
+
 
 class Agent(models.Model):
     user = models.OneToOneField(User)
@@ -107,6 +113,7 @@ class Agent(models.Model):
     freight_road_service = models.IntegerField(blank=True, null=True)
     service_country = models.ForeignKey(Country)
     strict_privacy = models.IntegerField(blank=True, null=True)
+    agentassociation = models.ManyToManyField(Agentassociations, blank=True, null=True)
 
 
 class Discount(models.Model):
@@ -200,11 +207,6 @@ class Peraccountdiscount(models.Model):
 #         managed = False
 #
 #
-# class Agentassociations(models.Model):
-#     name = models.CharField(max_length=200)
-#
-#     class Meta:
-#         managed = False
 
 
 # class Agentcertifications(models.Model):
