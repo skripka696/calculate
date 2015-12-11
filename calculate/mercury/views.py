@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework import viewsets
-from .serializers import CurrenciesSerializer
+from .serializers import CurrencySerializer
 from .models import Currency
 
 
@@ -17,5 +17,5 @@ class CurrenciesViewSet(viewsets.ModelViewSet):
         for only one instance
     """
     queryset = Currency.objects.all()
-    serializer_class = CurrenciesSerializer
+    serializer_class = CurrencySerializer
 
