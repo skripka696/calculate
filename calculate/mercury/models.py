@@ -36,6 +36,7 @@ class Corporateaccount(models.Model):
 
 
 class Agent(models.Model):
+    user = models.OneToOneField(User)
     name = models.CharField(max_length=200)
     office_address_1 = models.CharField(max_length=50)
     office_address_2 = models.CharField(max_length=50)
@@ -96,7 +97,7 @@ class Agent(models.Model):
 
 
 class Discount(models.Model):
-    agent = models.ForeignKey(Agent)
+    agent = models.ForeignKey(Agent, null=True, blank=True, default=None)
     user = models.ForeignKey(User)
     multiplier = models.FloatField()
     flc_l_o = models.FloatField(blank=True, null=True)
