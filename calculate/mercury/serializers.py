@@ -8,5 +8,3 @@ class PortSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Port
-
-class
