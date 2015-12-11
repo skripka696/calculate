@@ -19,5 +19,7 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^$', include('mercury.urls')),
+    url(r'^login', 'rest_framework_jwt.views.obtain_jwt_token'),
+    url(r'^', include('mercury.urls')),
+
 ]
