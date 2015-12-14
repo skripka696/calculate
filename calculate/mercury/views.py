@@ -1,4 +1,6 @@
 from django.shortcuts import render
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from rest_framework import generics
 import serializers
 import models
@@ -42,3 +44,11 @@ class LocationView(generics.ListAPIView):
     """
     queryset = models.Location.objects.all().order_by('name')
     serializer_class = serializers.LocationSerializer
+
+
+class MeList(APIView):
+
+    def get(self, request, format=None):
+        user = request.user
+        serializer = serializers.UserSerializer(user)
+        return Response(serializer.data)
