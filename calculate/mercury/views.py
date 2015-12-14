@@ -11,7 +11,7 @@ def index(request):
     return render(request, 'mercury/index.html', {'title': 'PricePoint - Pricing Tool'})
 
 
-class CurrenciesViewSet(generics.ListAPIView):
+class CurrenciesView(generics.ListAPIView):
     """
         A viewsets for viewing all instances Currency model and
         for only one instance
@@ -20,7 +20,7 @@ class CurrenciesViewSet(generics.ListAPIView):
     serializer_class = CurrencySerializer
 
 
-class AssociationViewSet(generics.ListAPIView):
+class AssociationView(generics.ListAPIView):
     """
         A viewset for viewing all instances AgentAssociations model
     """
@@ -28,7 +28,7 @@ class AssociationViewSet(generics.ListAPIView):
     serializer_class = AssociationSerializer
 
 
-class CertificationViewSet(generics.ListAPIView):
+class CertificationView(generics.ListAPIView):
     """
         A viewset for viewing all instances AgentCertifications model
     """
@@ -36,7 +36,7 @@ class CertificationViewSet(generics.ListAPIView):
     serializer_class = CertificationSerializer
 
 
-class LocationViewSet(generics.ListAPIView):
+class LocationView(generics.ListAPIView):
     """
         A viewset for viewing all instances Location model
     """
