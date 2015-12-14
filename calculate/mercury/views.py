@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from rest_framework import viewsets, permissions
+from django.contrib.auth.models import User
 
 import models
 import serializers
@@ -19,4 +20,13 @@ class PortList(viewsets.ModelViewSet):
     queryset = models.Port.objects.all()
     serializer_class = serializers.PortSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+
+class CorporateaccountList(viewsets.ModelViewSet):
+
+    serializer_class = serializers.AccountSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        return self.request.user.corporateaccount_set.all()
 
