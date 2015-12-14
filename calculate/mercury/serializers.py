@@ -18,7 +18,7 @@ class AssociationSerializer(serializers.ModelSerializer):
 class CertificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Agentcertifications
-        
+
 
 class LocationSerializer(serializers.ModelSerializer):
     Ports = serializers.SerializerMethodField()
