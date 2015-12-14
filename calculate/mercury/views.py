@@ -46,9 +46,17 @@ class LocationView(generics.ListAPIView):
     serializer_class = serializers.LocationSerializer
 
 
-class MeList(APIView):
+class MeView(APIView):
 
     def get(self, request, format=None):
         user = request.user
         serializer = serializers.UserSerializer(user)
         return Response(serializer.data)
+
+
+class PortView(generics.ListAPIView):
+    """
+    ModelView for request to model 'port' (read only)
+    """
+    queryset = models.Port.objects.all()
+    serializer_class = serializers.PortSerializer

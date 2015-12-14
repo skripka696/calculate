@@ -3,9 +3,10 @@ import views
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
-    url(r'^currencies$', views.CurrenciesView.as_view(), name='currency'),
-    url(r'^associations$', views.AssociationView.as_view(), name='association'),
-    url(r'^certifications', views.CertificationView.as_view(), name='certification'),
-    url(r'^locations$', views.LocationView.as_view(), name='location'),
-    url(r'^me$', views.MeList.as_view()),
+    url(r'^currencies$', views.CurrenciesView.as_view(), name='currencies'),
+    url(r'^associations$', views.AssociationView.as_view(), name='associations'),
+    url(r'^certifications', views.CertificationView.as_view(), name='certifications'),
+    url(r'^locations$', views.LocationView.as_view(), name='locations'),
+    url(r'^me$', views.MeView.as_view()),
+    url(r'^ports$', views.PortView.as_view(), name='ports'),
 ]
