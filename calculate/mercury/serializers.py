@@ -76,7 +76,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.User
-        fields = ['id', 'username', 'iat', 'agent_id']
+        fields = ('id', 'username', 'iat', 'agent_id')
 
 
 class PortSerializer(serializers.ModelSerializer):
@@ -85,3 +85,4 @@ class PortSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = models.Port
+        fields = ('id', 'name')
