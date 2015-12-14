@@ -28,6 +28,7 @@ class Currency(models.Model):
 
 class Port(models.Model):
     name = models.CharField(max_length=200)
+    locations = models.ManyToManyField('Location')
 
     class Meta:
         managed = False
@@ -49,13 +50,9 @@ class Corporateaccount(models.Model):
 
 class Agentassociations(models.Model):
     name = models.CharField(max_length=200)
-#
-#     class Meta:
-#         managed = False
 
 
 class Agent(models.Model):
-    user = models.OneToOneField(User)
     name = models.CharField(max_length=200)
     office_address_1 = models.CharField(max_length=50)
     office_address_2 = models.CharField(max_length=50)
@@ -113,11 +110,15 @@ class Agent(models.Model):
     freight_road_service = models.IntegerField(blank=True, null=True)
     service_country = models.ForeignKey(Country)
     strict_privacy = models.IntegerField(blank=True, null=True)
-    agentassociation = models.ManyToManyField(Agentassociations, blank=True, null=True)
+    associations = models.ManyToManyField('Agentassociations')
+    certifications = models.ManyToManyField('Agentcertifications')
+    users = models.ManyToManyField(User)
+    country = models.ManyToManyField('Country', through='AgentFreightServiceCountries', related_name='FreightCountries')
+
 
 
 class Discount(models.Model):
-    agent = models.ForeignKey(Agent, null=True, blank=True, default=None)
+    agent = models.ForeignKey(Agent)
     user = models.ForeignKey(User)
     multiplier = models.FloatField()
     flc_l_o = models.FloatField(blank=True, null=True)
@@ -138,9 +139,6 @@ class Discount(models.Model):
     multiplier_backup = models.FloatField(blank=True, null=True)
     road_o = models.FloatField(blank=True, null=True)
     road_d = models.FloatField(blank=True, null=True)
-
-    class Meta:
-        managed = False
 
 
 class Peraccountdiscount(models.Model):
@@ -167,10 +165,7 @@ class Peraccountdiscount(models.Model):
     road_d = models.FloatField(blank=True, null=True)
 
     class Meta:
-        managed = False
         unique_together = (('account', 'discount'),)
-
-
 
 # class AgentAssociations(models.Model):
 #     agent_id = models.IntegerField()
@@ -190,13 +185,13 @@ class Peraccountdiscount(models.Model):
 #         unique_together = (('agent_id', 'agentcertifications_id'),)
 #
 #
-# class AgentFreightServiceCountries(models.Model):
-#     agent = models.ForeignKey(Agent, models.DO_NOTHING)
-#     country_id = models.IntegerField()
-#
-#     class Meta:
-#         managed = False
-#         unique_together = (('agent', 'country_id'),)
+class AgentFreightServiceCountries(models.Model):
+    agent = models.ForeignKey(Agent)
+    country = models.ForeignKey('Country')
+
+    class Meta:
+        # managed = False
+        unique_together = (('agent', 'country'),)
 #
 #
 # class AgentUsers(models.Model):
@@ -209,11 +204,13 @@ class Peraccountdiscount(models.Model):
 #
 
 
-# class Agentcertifications(models.Model):
-#     name = models.CharField(max_length=200)
+class Agentcertifications(models.Model):
+    name = models.CharField(max_length=200)
 #
 #     class Meta:
 #         managed = False
+
+
 class Agentdocument(models.Model):
     agent = models.ForeignKey(Agent)
     upload_file = models.CharField(max_length=100)
@@ -465,6 +462,7 @@ class Lcltariffpricepoint(models.Model):
 
 class Location(models.Model):
     name = models.CharField(max_length=200)
+    markets = models.ManyToManyField('Market')
 
     class Meta:
         managed = False

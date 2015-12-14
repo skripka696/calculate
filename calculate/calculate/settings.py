@@ -93,7 +93,7 @@ WSGI_APPLICATION = 'calculate.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'calculate',
+        'NAME': 'mercury',
         'USER': 'root',
         'PASSWORD': 'root',
         'HOST': 'localhost',
