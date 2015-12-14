@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import *
+import models
 
 
 class CurrencySerializer(serializers.ModelSerializer):
@@ -10,7 +10,7 @@ class CurrencySerializer(serializers.ModelSerializer):
     priceInUSD = serializers.FloatField(source='price_in_usd')
 
     class Meta:
-        model = Currency
+        model = models.Currency
         fields = ('id', 'name', 'symbol', 'priceInUSD')
 
 
@@ -20,7 +20,7 @@ class AssociationSerializer(serializers.ModelSerializer):
         format
     """
     class Meta:
-        model = Agentassociations
+        model = models.Agentassociations
 
 
 class CertificationSerializer(serializers.ModelSerializer):
@@ -29,7 +29,7 @@ class CertificationSerializer(serializers.ModelSerializer):
         format
     """
     class Meta:
-        model = Agentcertifications
+        model = models.Agentcertifications
 
 
 class LocationSerializer(serializers.ModelSerializer):
@@ -41,7 +41,7 @@ class LocationSerializer(serializers.ModelSerializer):
     symbol = serializers.SerializerMethodField()
 
     def get_Ports(self, obj):
-        return obj.ports_set.all().values_list('pk', flat=True)
+        return obj.port_set.all().values_list('pk', flat=True)
 
     def get_symbol(self, obj):
         if obj:
@@ -49,5 +49,5 @@ class LocationSerializer(serializers.ModelSerializer):
         return None
 
     class Meta:
-        model = Location
+        model = models.Location
         fields = ('Ports', 'id', 'name', 'symbol')
