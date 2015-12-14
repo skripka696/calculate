@@ -1,7 +1,9 @@
 from django.shortcuts import render
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from rest_framework import viewsets, status
 from django.contrib.auth.models import User
-from .serializers import  AgentSerializer
+from .serializers import  UserSerializer
 from rest_framework import permissions
 from .models import Agent
 
@@ -12,8 +14,9 @@ def index(request):
     return render(request, 'mercury/index.html', {'title': 'PricePoint - Pricing Tool'})
 
 
-class UserViewSet(viewsets.ModelViewSet):
+class MeList(APIView):
 
-    queryset = Agent.objects.all()
-    serializer_class = AgentSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    def get(self, request, format=None):
+        user = request.user
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
