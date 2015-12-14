@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from . import views
+import views
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
@@ -7,4 +7,5 @@ urlpatterns = [
     url(r'^associations$', views.AssociationView.as_view(), name='association'),
     url(r'^certifications', views.CertificationView.as_view(), name='certification'),
     url(r'^locations$', views.LocationView.as_view(), name='location'),
+    url(r'^me$', views.MeList.as_view()),
 ]

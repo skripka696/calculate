@@ -27,7 +27,6 @@ class Port(models.Model):
     name = models.CharField(max_length=200)
     locations = models.ManyToManyField('Location')
 
-
 class Country(models.Model):
     name = models.CharField(max_length=200)
 
@@ -58,7 +57,7 @@ class Agent(models.Model):
     phone = models.CharField(max_length=50)
     fax = models.CharField(max_length=50)
     website = models.CharField(max_length=200)
-    currency = models.ForeignKey(Currency)
+    currency = models.ForeignKey(Currency, null=True, blank=True, default=None)
     email = models.CharField(max_length=50)
     import_contact = models.CharField(max_length=50)
     warehouse_address_1 = models.CharField(max_length=50)
@@ -99,7 +98,7 @@ class Agent(models.Model):
     freight_lcl_service = models.IntegerField(blank=True, null=True)
     freight_air_service = models.IntegerField(blank=True, null=True)
     freight_road_service = models.IntegerField(blank=True, null=True)
-    service_country = models.ForeignKey(Country)
+    service_country = models.ForeignKey(Country, blank=True, null=True, default=None)
     strict_privacy = models.IntegerField(blank=True, null=True)
     associations = models.ManyToManyField('Agentassociations')
     certifications = models.ManyToManyField('Agentcertifications')
@@ -252,6 +251,7 @@ class Airtariffpricepoint(models.Model):
     min_units = models.FloatField()
     unit_price = models.FloatField()
 
+
 # class Clientuser(models.Model):
 #     client_id = models.IntegerField()
 #     user_id = models.IntegerField()
@@ -350,6 +350,7 @@ class Fclfreighttariff(models.Model):
     transit = models.CharField(max_length=7, blank=True, null=True)
     addon = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 
+
 # class Freighttariff(models.Model):
 #     type = models.CharField(max_length=20)
 #     agent = models.ForeignKey(Agent)
@@ -420,6 +421,7 @@ class Location(models.Model):
     name = models.CharField(max_length=200)
     markets = models.ManyToManyField('Market')
 
+
 # class LocationMarkets(models.Model):
 #     market_id = models.IntegerField()
 #     location_id = models.IntegerField()
@@ -435,6 +437,7 @@ class Market(models.Model):
     lcl_port = models.CharField(max_length=200)
     air_port = models.CharField(max_length=200)
     notes = models.CharField(max_length=1024, blank=True, null=True)
+
 
 # class Marketstats(models.Model):
 #     market_id = models.IntegerField(unique=True)
@@ -494,6 +497,7 @@ class Move(models.Model):
     survey_facilitator_score = models.IntegerField(blank=True, null=True)
     survey_comment = models.CharField(max_length=200)
     allowance_notes = models.CharField(max_length=200, blank=True, null=True)
+
 
 # class Namedmodel(models.Model):
 #     name = models.CharField(max_length=200)
@@ -724,7 +728,7 @@ class Move(models.Model):
 #         managed = False
 
 class Roadfreighttariff(models.Model):
-    currency = models.ForeignKey(Currency)
+    currency = models.ForeignKey(Currency, blank=True, null=True, default=None )
     create_time = models.DateTimeField()
     archived = models.IntegerField()
     archive_time = models.DateTimeField(blank=True, null=True)
@@ -755,6 +759,8 @@ class Shipment(models.Model):
     survey_weight = models.FloatField()
     actual_volume = models.FloatField()
     actual_weight = models.FloatField()
+
+
 # class Shipmentallowance(models.Model):
 #     move_id = models.IntegerField()
 #     mode = models.CharField(max_length=20)
@@ -883,7 +889,8 @@ class Tariffsupplement(models.Model):
     type = models.ManyToManyField(Tariffsupplementtype, related_name='type')
     rate = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     rate_basis = models.CharField(max_length=300, blank=True, null=True)
-#
+
+
 # class Task(models.Model):
 #     move_id = models.IntegerField()
 #     template_id = models.IntegerField()

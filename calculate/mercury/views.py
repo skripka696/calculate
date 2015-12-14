@@ -1,7 +1,9 @@
 from django.shortcuts import render
+import serializers
+import models
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from rest_framework import generics
-from .serializers import *
-from .models import *
 
 
 def index(request):
@@ -16,29 +18,37 @@ class CurrenciesView(generics.ListAPIView):
         A viewsets for viewing all instances Currency model and
         for only one instance
     """
-    queryset = Currency.objects.all()
-    serializer_class = CurrencySerializer
+    queryset = models.Currency.objects.all()
+    serializer_class = serializers.CurrencySerializer
 
 
 class AssociationView(generics.ListAPIView):
     """
         A viewset for viewing all instances AgentAssociations model
     """
-    queryset = Agentassociations.objects.all()
-    serializer_class = AssociationSerializer
+    queryset = models.Agentassociations.objects.all()
+    serializer_class = serializers.AssociationSerializer
 
 
 class CertificationView(generics.ListAPIView):
     """
         A viewset for viewing all instances AgentCertifications model
     """
-    queryset = Agentcertifications.objects.all()
-    serializer_class = CertificationSerializer
+    queryset = models.Agentcertifications.objects.all()
+    serializer_class = serializers.CertificationSerializer
 
 
 class LocationView(generics.ListAPIView):
     """
         A viewset for viewing all instances Location model
     """
-    queryset = Location.objects.all()
-    serializer_class = LocationSerializer
+    queryset = models.Location.objects.all()
+    serializer_class = serializers.LocationSerializer
+
+class MeList(APIView):
+
+    def get(self, request, format=None):
+        user = request.user
+        serializer = serializers.UserSerializer(user)
+        return Response(serializer.data)
+
