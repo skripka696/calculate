@@ -120,7 +120,8 @@ class GetDetails(APIView):
 
             agents = models.Agent.objects.filter(id__in=result)
 
-            serializer = serializers.AgentSerializer(agents, many=True)
+            serializer = serializers.AgentSerializer(agents, many=True,
+                                                     context={'request':request})
             return Response(serializer.data)
 
         else:
@@ -153,7 +154,8 @@ class GetDetails(APIView):
 
             agents = models.Agent.objects.filter(id__in=result)
 
-            serializer = serializers.AgentSerializer(agents, many=True)
+            serializer = serializers.AgentSerializer(agents, many=True,
+                                                     context={'request':request})
             return Response(serializer.data)
 
 

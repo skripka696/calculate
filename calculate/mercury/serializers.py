@@ -1,3 +1,4 @@
+import json
 from django.db.models.aggregates import Avg, Count
 from rest_framework import serializers
 import models
@@ -99,10 +100,22 @@ class AgentSerializer(serializers.ModelSerializer):
         return models.Agentlogo.objects.get(agent=agent).logo.url
 
     def get_ratings(self, agent):
-        return models.Agentrating.objects.filter(agent=agent).aggregate(Avg('user_rating')).annotate(Count(request.user))
+        request = self.context['request']
+        query = models.Agentrating.objects.filter(agent=agent)
+        avg_user_rating = query.exclude(user=request.user).aggregate(average=Avg('user_rating'))['average']
+        if not avg_user_rating:
+            avg_user_rating = 0
+        count_user = query.exclude(user=request.user).aggregate(users=Count('user'))['users']
+        try:
+            user_rating = query.filter(user=request.user)[0].user_rating
+        except IndexError:
+            user_rating = 0
+        return {'average': avg_user_rating,
+                'userRating': user_rating,
+                'users': count_user}
+        # # return request.user
 
     class Meta:
         model = models.Agent
         fields = ('id', 'name', 'logo', 'associations', 'certifications', 'ratings')
-
 

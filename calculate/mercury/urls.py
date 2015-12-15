@@ -11,4 +11,6 @@ urlpatterns = [
     url(r'^ports$', views.PortView.as_view(), name='ports'),
     url(r'^accounts/user/$', views.UserAccount.as_view()),
     url(r'^details/agents/$', views.GetDetails.as_view()),
+    url(r'^price$', views.GetPrice.as_view()),
+
 ]
