@@ -11,12 +11,13 @@ from django.contrib.auth.models import User
 from django.db import models
 
 
-# class Accountdetails(models.Model):
-#     account = models.ForeignKey('Corporateaccount')
-#     email = models.CharField(max_length=75)
+class Accountdetails(models.Model):
+    account = models.ForeignKey('Corporateaccount')
+    email = models.CharField(max_length=75)
 #
 #     class Meta:
 #         managed = False
+
 class Currency(models.Model):
     name = models.CharField(max_length=200)
     symbol = models.CharField(max_length=200)
@@ -33,7 +34,8 @@ class Country(models.Model):
 
 
 class Corporateaccount(models.Model):
-    account = models.ForeignKey(User)
+    account = models.ForeignKey(User, related_name='named_user')
+    client = models.ManyToManyField(User, related_name='account_users')
 
 
 class Agentassociations(models.Model):
@@ -250,12 +252,12 @@ class Airtariffpricepoint(models.Model):
     unit_price = models.FloatField()
 
 
-# class Clientuser(models.Model):
-#     client_id = models.IntegerField()
-#     user_id = models.IntegerField()
-#
-#     class Meta:
-#         managed = False
+class Clientuser(models.Model):
+    user = models.OneToOneField(User)
+    client = models.ForeignKey(User, related_name='sub_users')
+    preferred_agents = models.ManyToManyField(Agent)
+    countries = models.ManyToManyField(Country)
+
 
 
 # class ClientuserCountries(models.Model):

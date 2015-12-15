@@ -4,7 +4,6 @@ from rest_framework.response import Response
 from rest_framework import generics
 import serializers
 import models
-import json
 
 
 def index(request):
@@ -61,12 +60,6 @@ class PortView(generics.ListAPIView):
     """
     queryset = models.Port.objects.all()
     serializer_class = serializers.PortSerializer
-
-
-class UserAccount(APIView):
-
-    def get(self, request):
-        return Response(json.loads('[{"id": null, "name": "None"}]'))
 
 
 class GetDetails(APIView):
@@ -159,13 +152,40 @@ class GetDetails(APIView):
             return Response(serializer.data)
 
 
+class CorporateaccountList(APIView):
+
+    def get(self, request, format=None):
+        query = request.user.named_user.all()
+        # query = User.objects.get(pk=315).named_user.all()
+        corp_account_list = serializers.CorporateAccountSerializer(query, many=True)
+        data = corp_account_list.data
+        data.append({'id': None, 'name': 'None'})
+        return Response(data)
+
+class GetPrice(APIView):
+
+    def get(self):
+        user = self.request.user
+        agent_id = self.request.user.agent_set.first().pk
+        destination_ports = self.request.query_params.get('destinationsPorts')
+        origin_ports = self.request.query_params.get('originPorts')
+        if self.request.query_params.get('serviceType') == 'Freight':
+            client = models.Clientuser.objects.get(user=user)
+            if agent_id:
+                lanes = models.Lane.objects.filter(
+                    origin_port__in=self.request.query_params.getlist('originPorts'),
+                    destination_port__in=self.request.query_params.getlist('destinationPorts')).filter(agent_id=agent_id)
+
+                tarifftype = {
+                    'FCL_C': models.Fclfreighttariff,
+                    'FCL_L': models.Fclfreighttariff,
+                    'LCL': models.Lclfreighttariff,
+                    'Air': models.Airfreighttariff,
+                    'Road': models.Roadfreighttariff,
+                }
+
+                current_tarrif = tarifftype.get(self.request.query_params.get('tariffType'))
+                for lane in lanes:
 
 
-
-
-
-
-
-
-
-
+            # all another serviceType
