@@ -63,19 +63,11 @@ class PortView(generics.ListAPIView):
     serializer_class = serializers.PortSerializer
 
 
-# class CorporateaccountList(generics.ListAPIView):
-#
-#     serializer_class = serializers.AccountSerializer
-#
-#     def get_queryset(self):
-#         return self.request.user.named_user.all()
-
-
 class CorporateaccountList(APIView):
 
     def get(self, request, format=None):
-        # query = request.user.named_user.all()
-        query = User.objects.get(pk=315).named_user.all()
+        query = request.user.named_user.all()
+        # query = User.objects.get(pk=315).named_user.all()
         corp_account_list = serializers.CorporateAccountSerializer(query, many=True)
         data = corp_account_list.data
         data.append({'id': None, 'name': 'None'})
