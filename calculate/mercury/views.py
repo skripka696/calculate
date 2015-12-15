@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework import generics
 import serializers
 import models
+import json
 
 
 def index(request):
@@ -60,3 +61,109 @@ class PortView(generics.ListAPIView):
     """
     queryset = models.Port.objects.all()
     serializer_class = serializers.PortSerializer
+
+
+class UserAccount(APIView):
+
+    def get(self, request):
+        return Response(json.loads('[{"id": null, "name": "None"}]'))
+
+
+class GetDetails(APIView):
+    """
+        Take details about agent
+    """
+    # model = models.Agent
+
+
+    def get(self, request, format=None):
+        try:
+            agent_id = request.user.agent_set.first().pk
+        except Exception:
+            agent_id = 0
+        if self.request.query_params.get('serviceType') == 'Freight':
+            if agent_id:
+                agent_ids = [agent_id]
+            else:
+                lanes = models.Lane.objects.filter(
+                    origin_port__in=self.request.query_params.getlist('originPorts'),
+                    destination_port__in=self.request.query_params.getlist('destinationPorts'))
+
+                tarifftype = {
+                    'FCL_C': models.Fclfreighttariff,
+                    'FCL_L': models.Fclfreighttariff,
+                    'LCL': models.Lclfreighttariff,
+                    'Air': models.Airfreighttariff,
+                    'Road': models.Roadfreighttariff,
+                }
+
+                current_tarrif = tarifftype.get(self.request.query_params.get('tariffType'))
+                agent_ids = set()
+                for lane in lanes:
+                    if current_tarrif:
+                        if current_tarrif.objects.filter(lane=lane).exists():
+                            agent_ids.add(lane.agent_id)
+
+            discounts = models.Discount.objects.filter(agent_id__in=agent_ids, user=request.user)
+            discount_map = {}
+            for discount in discounts:
+                discount_map[discount.agent_id] = discount.multiplier
+
+            for agent in agent_ids:
+                if agent not in discount_map:
+                    discount_map[agent] = 1
+
+            result = []
+            for k, v in discount_map.iteritems():
+                if v >= 0:
+                    result.append(k)
+
+            agents = models.Agent.objects.filter(id__in=result)
+
+            serializer = serializers.AgentSerializer(agents, many=True)
+            return Response(serializer.data)
+
+        else:
+            if agent_id:
+                agent_ids = [agent_id]
+            else:
+                location_id = self.request.query_params.get('locationId')
+                if self.request.query_params.get('serviceType') == 'Origin':
+
+                    markets = models.Location.objects.get(pk=location_id).markets.filter(
+                        port__in=self.request.query_params.getlist('originPorts'))
+                else:
+                    markets = models.Location.objects.get(pk=location_id).markets.filter(
+                        port__in=self.request.query_params.getlist('destinationPorts'))
+                agent_ids = set(models.Tariff.objects.filter(market__in=markets).values_list('agent_id', flat=True))
+
+            discounts = models.Discount.objects.filter(agent_id__in=agent_ids, user=request.user)
+            discount_map = {}
+            for discount in discounts:
+                discount_map[discount.agent_id] = discount.multiplier
+
+            for agent in agent_ids:
+                if agent not in discount_map:
+                    discount_map[agent] = 1
+
+            result = []
+            for k, v in discount_map.iteritems():
+                if v >= 0:
+                    result.append(k)
+
+            agents = models.Agent.objects.filter(id__in=result)
+
+            serializer = serializers.AgentSerializer(agents, many=True)
+            return Response(serializer.data)
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,3 +1,4 @@
+from django.db.models.aggregates import Avg, Count
 from rest_framework import serializers
 import models
 from time import mktime
@@ -86,3 +87,22 @@ class PortSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Port
         fields = ('id', 'name')
+
+
+class AgentSerializer(serializers.ModelSerializer):
+    associations = AssociationSerializer(many=True)
+    certifications = CertificationSerializer(many=True)
+    logo = serializers.SerializerMethodField()
+    ratings = serializers.SerializerMethodField()
+
+    def get_logo(self, agent):
+        return models.Agentlogo.objects.get(agent=agent).logo.url
+
+    def get_ratings(self, agent):
+        return models.Agentrating.objects.filter(agent=agent).aggregate(Avg('user_rating')).annotate(Count(request.user))
+
+    class Meta:
+        model = models.Agent
+        fields = ('id', 'name', 'logo', 'associations', 'certifications', 'ratings')
+
+

@@ -62,7 +62,7 @@ REST_FRAMEWORK = {
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
     ),
     'JWT_AUTH_HEADER_PREFIX': 'Bearer',
-    'JWT_EXPIRATION_DELTA': timedelta(hours=2)
+    'JWT_EXPIRATION_DELTA': timedelta(days=2)
 }
 
 APPEND_SLASH = False
@@ -152,6 +152,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_PATH = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = (STATIC_PATH, )
+
+MEDIA_ROOT = 'media'
 
 try:
     from settings_local import *

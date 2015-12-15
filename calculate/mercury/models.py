@@ -26,6 +26,7 @@ class Currency(models.Model):
 class Port(models.Model):
     name = models.CharField(max_length=200)
     locations = models.ManyToManyField('Location')
+    markets = models.ManyToManyField('Market')
 
 class Country(models.Model):
     name = models.CharField(max_length=200)
@@ -208,9 +209,9 @@ class Agentdocument(models.Model):
     archived = models.IntegerField()
 
 
-# class Agentlogo(models.Model):
-#     agent = models.ForeignKey(Agent, models.DO_NOTHING)
-#     logo = models.CharField(max_length=100)
+class Agentlogo(models.Model):
+    agent = models.ForeignKey(Agent)
+    logo = models.ImageField(upload_to='agent_logos')
 #
 #     class Meta:
 #         managed = False
@@ -233,12 +234,12 @@ class Lane(models.Model):
 class Airfreighttariff(models.Model):
     currency = models.ForeignKey(Currency)
     create_time = models.DateTimeField()
-    archived = models.IntegerField()
+    archived = models.BooleanField()
     archive_time = models.DateTimeField(blank=True, null=True)
     lane = models.ForeignKey(Lane)
     expiry = models.DateField(blank=True, null=True)
     comment = models.CharField(max_length=5000, blank=True, null=True)
-    dthc = models.IntegerField()
+    dthc = models.BooleanField()
     transit = models.CharField(max_length=7, blank=True, null=True)
     addon = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 
@@ -335,15 +336,15 @@ class Currencyhistory(models.Model):
 class Fclfreighttariff(models.Model):
     currency = models.ForeignKey(Currency)
     create_time = models.DateTimeField()
-    archived = models.IntegerField()
+    archived = models.BooleanField()
     archive_time = models.DateTimeField(blank=True, null=True)
-    lane = models.ForeignKey(Lane)
+    lane = models.ForeignKey(Lane, related_name='fclfreighttariff')
     fcl_20_rate = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     fcl_40_rate = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     fcl_40hc_rate = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     expiry = models.DateField(blank=True, null=True)
     comment = models.CharField(max_length=5000, blank=True, null=True)
-    dthc = models.IntegerField()
+    dthc = models.BooleanField()
     transit = models.CharField(max_length=7, blank=True, null=True)
     addon = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 
@@ -398,12 +399,12 @@ class Globalsetting(models.Model):
 class Lclfreighttariff(models.Model):
     currency = models.ForeignKey(Currency)
     create_time = models.DateTimeField()
-    archived = models.IntegerField()
+    archived = models.BooleanField()
     archive_time = models.DateTimeField(blank=True, null=True)
     lane = models.ForeignKey(Lane, models.DO_NOTHING)
     expiry = models.DateField(blank=True, null=True)
     comment = models.CharField(max_length=5000, blank=True, null=True)
-    dthc = models.IntegerField()
+    dthc = models.BooleanField()
     transit = models.CharField(max_length=7, blank=True, null=True)
     addon = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 
@@ -727,9 +728,9 @@ class Move(models.Model):
 class Roadfreighttariff(models.Model):
     currency = models.ForeignKey(Currency, blank=True, null=True, default=None )
     create_time = models.DateTimeField()
-    archived = models.IntegerField()
+    archived = models.BooleanField()
     archive_time = models.DateTimeField(blank=True, null=True)
-    lane = models.ForeignKey(Lane, models.DO_NOTHING)
+    lane = models.ForeignKey(Lane)
     basis = models.CharField(max_length=20)
     expiry = models.DateField(blank=True, null=True)
     comment = models.CharField(max_length=1000, blank=True, null=True)
