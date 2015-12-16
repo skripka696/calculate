@@ -90,7 +90,7 @@ class PortSerializer(serializers.ModelSerializer):
 class AgentSerializer(serializers.ModelSerializer):
     associations = AssociationSerializer(many=True)
     certifications = CertificationSerializer(many=True)
-    logo = serializers.SerializerMethodField()
+    logo = serializers.StringRelatedField(source='agentlogo.logo')
     ratings = serializers.SerializerMethodField()
 
     def get_logo(self, agent):

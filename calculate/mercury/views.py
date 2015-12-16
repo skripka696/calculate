@@ -66,9 +66,6 @@ class GetDetails(APIView):
     """
         Take details about agent
     """
-    # model = models.Agent
-
-
     def get(self, request, format=None):
         try:
             agent_id = request.user.agent_set.first().pk
@@ -83,19 +80,17 @@ class GetDetails(APIView):
                     destination_port__in=self.request.query_params.getlist('destinationPorts'))
 
                 tarifftype = {
-                    'FCL_C': models.Fclfreighttariff,
-                    'FCL_L': models.Fclfreighttariff,
-                    'LCL': models.Lclfreighttariff,
-                    'Air': models.Airfreighttariff,
-                    'Road': models.Roadfreighttariff,
+                    'FCL_C': 'fclfreighttariff',
+                    'FCL_L': 'fclfreighttariff',
+                    'LCL': 'lclfreighttariff',
+                    'Air': 'airfreighttariff',
+                    'Road': 'roadfreighttariff',
                 }
 
                 current_tarrif = tarifftype.get(self.request.query_params.get('tariffType'))
-                agent_ids = set()
-                for lane in lanes:
-                    if current_tarrif:
-                        if current_tarrif.objects.filter(lane=lane).exists():
-                            agent_ids.add(lane.agent_id)
+                tarif_option_name = '%s__isnull' % current_tarrif
+                lanes = lanes.filter(**{tarif_option_name: False})
+                agent_ids = lanes.values_list('agent_id', flat=True)
 
             discounts = models.Discount.objects.filter(agent_id__in=agent_ids, user=request.user)
             discount_map = {}
@@ -162,19 +157,32 @@ class CorporateaccountList(APIView):
         data.append({'id': None, 'name': 'None'})
         return Response(data)
 
+
 class GetPrice(APIView):
 
+    def converterVolume(self, volume, volumeUnits):
+        pass
+
+    def convertWeight(self, weight, weightUnits):
+        pass
+
     def get(self):
+
+        converted_volume = self.converterVolume(self.request.query_params.get('volume'),
+                                           self.request.query_params.get('volumeUnits'))
+        converted_weight = self.convertWeight(self.request.query_params.get('weight'),
+                                         self.request.query_params.get('weightUnits'))
+
         user = self.request.user
         agent_id = self.request.user.agent_set.first().pk
         destination_ports = self.request.query_params.get('destinationsPorts')
         origin_ports = self.request.query_params.get('originPorts')
         if self.request.query_params.get('serviceType') == 'Freight':
-            client = models.Clientuser.objects.get(user=user)
+            client = self.request.user.clientuser
             if agent_id:
                 lanes = models.Lane.objects.filter(
-                    origin_port__in=self.request.query_params.getlist('originPorts'),
-                    destination_port__in=self.request.query_params.getlist('destinationPorts')).filter(agent_id=agent_id)
+                    origin_port__in=destination_ports,
+                    destination_port__in=origin_ports).filter(agent_id=agent_id)
 
                 tarifftype = {
                     'FCL_C': models.Fclfreighttariff,
@@ -186,6 +194,7 @@ class GetPrice(APIView):
 
                 current_tarrif = tarifftype.get(self.request.query_params.get('tariffType'))
                 for lane in lanes:
-
+                    # lane.filter(agent_id=agent_id)
+                    discount = models.Discount
 
             # all another serviceType
