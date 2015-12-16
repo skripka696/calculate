@@ -165,9 +165,9 @@ class GetPrice(APIView):
 
     def get(self):
 
-        converted_volume = Converter.converterVolume(self.request.query_params.get('volume'),
+        converted_volume = Converter.converter_volume(self.request.query_params.get('volume'),
                                            self.request.query_params.get('volumeUnits'))
-        converted_weight = Converter.convertWeight(self.request.query_params.get('weight'),
+        converted_weight = Converter.convert_weight(self.request.query_params.get('weight'),
                                          self.request.query_params.get('weightUnits'))
 
         user = self.request.user
