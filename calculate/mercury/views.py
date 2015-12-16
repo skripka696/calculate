@@ -158,43 +158,67 @@ class CorporateaccountList(APIView):
         return Response(data)
 
 
+# class GetPrice(APIView):
+#
+#     def converterVolume(self, volume, volumeUnits):
+#         pass
+#
+#     def convertWeight(self, weight, weightUnits):
+#         pass
+#
+#     def get(self):
+#
+#         converted_volume = self.converterVolume(self.request.query_params.get('volume'),
+#                                            self.request.query_params.get('volumeUnits'))
+#         converted_weight = self.convertWeight(self.request.query_params.get('weight'),
+#                                          self.request.query_params.get('weightUnits'))
+#
+#         user = self.request.user
+#         agent_id = self.request.user.agent_set.first().pk
+#         destination_ports = self.request.query_params.get('destinationsPorts')
+#         origin_ports = self.request.query_params.get('originPorts')
+#         if self.request.query_params.get('serviceType') == 'Freight':
+#             client = self.request.user.clientuser
+#             if agent_id:
+#                 lanes = models.Lane.objects.filter(
+#                     origin_port__in=destination_ports,
+#                     destination_port__in=origin_ports).filter(agent_id=agent_id)
+#
+#                 tarifftype = {
+#                     'FCL_C': models.Fclfreighttariff,
+#                     'FCL_L': models.Fclfreighttariff,
+#                     'LCL': models.Lclfreighttariff,
+#                     'Air': models.Airfreighttariff,
+#                     'Road': models.Roadfreighttariff,
+#                 }
+#
+#                 current_tarrif = tarifftype.get(self.request.query_params.get('tariffType'))
+#                 for lane in lanes:
+#                     # lane.filter(agent_id=agent_id)
+#                     discount = models.Discount
+#
+#             # all another serviceType
+
+
 class GetPrice(APIView):
+    """
+    APIView for price list
+    """
+    def get(self, request, format=None):
 
-    def converterVolume(self, volume, volumeUnits):
-        pass
 
-    def convertWeight(self, weight, weightUnits):
-        pass
+        # convert to int
+        currency_id = int(self.request.query_params.get('currencyId'))
+        weight = int(self.request.query_params.get('weight'))
+        volume = int(self.request.query_params.get('volume'))
+        location_id = int(self.request.query_params.get('locationID'))
 
-    def get(self):
+        origin_ports = [int(item) for item in self.request.query_params.getlist('originPorts', [])]
+        dest_ports = [int(item) for item in self.request.query_params.getlist('destinationPorts', [])]
 
-        converted_volume = self.converterVolume(self.request.query_params.get('volume'),
-                                           self.request.query_params.get('volumeUnits'))
-        converted_weight = self.convertWeight(self.request.query_params.get('weight'),
-                                         self.request.query_params.get('weightUnits'))
-
-        user = self.request.user
-        agent_id = self.request.user.agent_set.first().pk
-        destination_ports = self.request.query_params.get('destinationsPorts')
-        origin_ports = self.request.query_params.get('originPorts')
         if self.request.query_params.get('serviceType') == 'Freight':
-            client = self.request.user.clientuser
-            if agent_id:
-                lanes = models.Lane.objects.filter(
-                    origin_port__in=destination_ports,
-                    destination_port__in=origin_ports).filter(agent_id=agent_id)
+            pass
+        else:
+            pass
 
-                tarifftype = {
-                    'FCL_C': models.Fclfreighttariff,
-                    'FCL_L': models.Fclfreighttariff,
-                    'LCL': models.Lclfreighttariff,
-                    'Air': models.Airfreighttariff,
-                    'Road': models.Roadfreighttariff,
-                }
-
-                current_tarrif = tarifftype.get(self.request.query_params.get('tariffType'))
-                for lane in lanes:
-                    # lane.filter(agent_id=agent_id)
-                    discount = models.Discount
-
-            # all another serviceType
+        print 'stop'

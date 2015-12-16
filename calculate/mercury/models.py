@@ -212,7 +212,7 @@ class Agentdocument(models.Model):
 
 
 class Agentlogo(models.Model):
-    agent = models.ForeignKey(Agent)
+    agent = models.OneToOneField(Agent)
     logo = models.ImageField(upload_to='agent_logos')
 #
 #     class Meta:
