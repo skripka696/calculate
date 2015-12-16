@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import generics
+from calculate.mercury.converter import Converter
 import serializers
 import models
 
@@ -160,17 +161,13 @@ class CorporateaccountList(APIView):
 
 class GetPrice(APIView):
 
-    def converterVolume(self, volume, volumeUnits):
-        pass
 
-    def convertWeight(self, weight, weightUnits):
-        pass
 
     def get(self):
 
-        converted_volume = self.converterVolume(self.request.query_params.get('volume'),
+        converted_volume = Converter.converterVolume(self.request.query_params.get('volume'),
                                            self.request.query_params.get('volumeUnits'))
-        converted_weight = self.convertWeight(self.request.query_params.get('weight'),
+        converted_weight = Converter.convertWeight(self.request.query_params.get('weight'),
                                          self.request.query_params.get('weightUnits'))
 
         user = self.request.user
