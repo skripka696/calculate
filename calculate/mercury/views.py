@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import generics
+from converter import Converter
 import serializers
 import models
 
@@ -158,6 +159,7 @@ class CorporateaccountList(APIView):
         return Response(data)
 
 
+
 # class GetPrice(APIView):
 #
 #     def converterVolume(self, volume, volumeUnits):
@@ -199,13 +201,16 @@ class CorporateaccountList(APIView):
 #
 #             # all another serviceType
 
-
 class GetPrice(APIView):
     """
     APIView for price list
     """
     def get(self, request, format=None):
 
+        converted_volume = Converter.converter_volume(self.request.query_params.get('volume'),
+                                           self.request.query_params.get('volumeUnits'))
+        converted_weight = Converter.convert_weight(self.request.query_params.get('weight'),
+                                         self.request.query_params.get('weightUnits'))
 
         # convert to int
         currency_id = int(self.request.query_params.get('currencyId'))
@@ -221,4 +226,4 @@ class GetPrice(APIView):
         else:
             pass
 
-        print 'stop'
+        return Response({})
