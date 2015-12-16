@@ -1,4 +1,5 @@
 class Converter(object):
+
     CUBIC_METER_TO_CUBIC_FOOT = 35.3146667
 
     def cubic_metric_to_cubic_foot_src(self, value):

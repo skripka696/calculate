@@ -319,11 +319,11 @@ class Currencyhistory(models.Model):
         unique_together = (('currency', 'timestamp'),)
 
 
-# class Discounts(models.Model):
-#     agent = models.ForeignKey(Agent)
-#     user = models.ForeignKey(User)
-#     multiplier = models.FloatField()
-#
+class Discounts(models.Model):
+    agent = models.ForeignKey(Agent)
+    user = models.ForeignKey(User)
+    multiplier = models.FloatField()
+
 #     class Meta:
 #         managed = False
 
@@ -403,7 +403,7 @@ class Lclfreighttariff(models.Model):
     create_time = models.DateTimeField()
     archived = models.BooleanField()
     archive_time = models.DateTimeField(blank=True, null=True)
-    lane = models.ForeignKey(Lane, models.DO_NOTHING)
+    lane = models.ForeignKey(Lane)
     expiry = models.DateField(blank=True, null=True)
     comment = models.CharField(max_length=5000, blank=True, null=True)
     dthc = models.BooleanField()
