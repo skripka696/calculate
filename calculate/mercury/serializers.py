@@ -136,3 +136,19 @@ class CorporateAccountSerializer(serializers.ModelSerializer):
         fields = ('id', 'name')
 
 
+class PriceSerializer(serializers.Serializer):
+    # Ports =
+    agent_details = serializers.DictField()
+    chargeable_volume = serializers.IntegerField()
+    chargeable_weight = serializers.IntegerField()
+    converted_rate = serializers.FloatField()
+    currency_id = serializers.IntegerField()
+    # market_id = serializers.IntegerField()
+    maximum_volume = serializers.FloatField()
+    minimum_volume = serializers.IntegerField()
+    rate = serializers.FloatField()
+    tariff_id = serializers.IntegerField()
+    thc = serializers.IntegerField()
+
+
+

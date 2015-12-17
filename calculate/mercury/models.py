@@ -858,7 +858,7 @@ class Tariffpricepoint(models.Model):
     tariff = models.ForeignKey(Tariff)
     min_units = models.FloatField()
     unit_price = models.FloatField()
-    export = models.IntegerField()
+    export = models.BooleanField()
 
 
 # ????

@@ -165,7 +165,14 @@ class GetPrice(APIView):
     """
 
     def get_convert_currency(self, value, src_currency_id, dest_currency_id, timestamp):
-
+        src_currency = models.Currency.objects.get(id=src_currency_id)
+        dest_currency = models.Currency.objects.get(id=dest_currency_id)
+        if timestamp:
+            src_currency = models.Currencyhistory.objects.filter(timestamp__lte=timestamp,
+                                                                 currency_id=src_currency_id).order_by('-timestamp')
+            dest_currency = models.Currencyhistory.objects.filter(timestamp__lte=timestamp,
+                                                                  currency_id=dest_currency_id).order_by('-timestamp')
+        return value * src_currency.price_in_usd / dest_currency.price_in_usd
 
     def get_freight_contact(self, agent, contact_details):
         if agent.freight_contact:
@@ -177,12 +184,12 @@ class GetPrice(APIView):
         return contact_details
 
     def get_service_details(self, agent, contact_details, service_type):
-        if hasattr(models.agent, service_type+'_contact'):
-            contact_details.contact = hasattr(models.agent, service_type+'_contact')
-        if hasattr(models.agent, service_type+'_phone'):
-            contact_details.phone = hasattr(models.agent, service_type+'_phone')
-        if hasattr(models.agent, service_type+'_email'):
-            contact_details.email = hasattr(models.agent, service_type+'_email')
+        if hasattr(agent, service_type+'_contact'):
+            contact_details['contact'] = hasattr(agent, service_type+'_contact')
+        if hasattr(agent, service_type+'_phone'):
+            contact_details['phone'] = hasattr(agent, service_type+'_phone')
+        if hasattr(agent, service_type+'_email'):
+            contact_details['email'] = hasattr(agent, service_type+'_email')
         return contact_details
 
     def get_phone(self, agent):
@@ -199,7 +206,7 @@ class GetPrice(APIView):
 
     def get_contact_details(self, service_type, agent):
         contact_details = {
-           'contact': agent.manager_contact,
+            'contact': agent.manager_contact,
             'phone': self.get_phone(agent),
             'email': self.get_email(agent),
         }
@@ -211,7 +218,7 @@ class GetPrice(APIView):
         contact_details = self.get_service_details(agent, contact_details, service_type)
 
     def get_freight_tarriff_price_properties(self, tariff, weight, volume, price=0):
-        price = price | {
+        price = price or {
             'minimum_volume': volume,
             'chargeable_volume': volume,
             'chargeable_weight': weight,
@@ -227,17 +234,104 @@ class GetPrice(APIView):
         price['expiry'] = tariff.expiry
         return price
 
-    def get(self, request, format=None):
+    def get_price_from_price_points(self, price_points, weight, volume, minimum_density,
+                                    basis):
+        for price_point in price_points:
+            price = get_price(price_point, weight, volume, minimum_density, basis)
 
+    def get_thc_rate_format(self, tariff, container_size):
+        if container_size.find('40') != -1:
+            thc_rate = tariff.thc_40
+            thc_format = tariff.thc_40_format
+        else:
+            thc_rate = tariff.thc
+            thc_format = tariff.thc_format
+        return [thc_rate, thc_format]
+
+    def get_thc_volume(self, volume, default_thc, thc_format, thc_rate):
+        volume = Converter().converter_volume(volume, default_thc, thc_format)
+        thc = thc_rate * volume
+        return [volume, thc]
+
+    def get_thc_weight(self, weight, default_thc, thc_format, thc_rate):
+        weight = Converter().convert_weight(weight, default_thc, thc_format)
+        thc = thc_rate * weight
+        return [weight, thc]
+
+    def get_thc(self, tariff, weight, volume, container_size):
+        if container_size:
+            container_size = container_size
+        elif volume >= 1100:
+            container_size = '40'
+        else:
+            container_size = '20'
+        tariff_types = {
+            'FCL_C': (self.get_thc_rate_format, (tariff, container_size)),
+            'FCL_L': (self.get_thc_rate_format, (tariff, container_size)),
+            'SUP': [0, 0],
+            'PS':  [0, 0],
+            'default': [tariff.thc, tariff.thc_format],
+        }
+        thc_rate = tariff_types.get(tariff.type)[0]
+        thc_format = tariff_types.get(tariff.type)[1]
+        thc_formats = {
+            'KG_ACW': (self.get_thc_volume, (volume, 'cft', thc_format, thc_rate)),
+            'CBM': (self.get_thc_volume, (volume, 'cft', thc_format, thc_rate)),
+            'CFT': (self.get_thc_volume, (volume, 'cft', thc_format, thc_rate)),
+            'CWT': (self.get_thc_weight, (weight, 'lb', thc_format, thc_rate)),
+            'default': thc_rate,
+        }
+
+        thc = thc_formats.get(thc_format)
+        thc = thc[0](*thc[1])[0]
+        return thc
+
+    def get_price_by_tariff(self, tariff, quote_request):
+        is_origin = quote_request['is_origin']
+        if tariff.type == 'PS':
+            is_origin = not quote_request['is_origin']
+
+        tariff_price_points = models.Tariffpricepoint.objects.get(tariff=tariff,
+                                                                 export=is_origin)
+        if is_origin:
+            basis = tariff.basis
+            minimum_density = tariff.minimum_density
+        else:
+            basis = tariff.basis_dest or tariff.basis
+            minimum_density = tariff.minimum_density_dest
+        price = self.get_price_from_price_points(tariff_price_points,
+                                                quote_request.get('converted_weight'),
+                                                quote_request.get('converted_volume'),
+                                                minimum_density,
+                                                basis)
+        price['thc'] = self.get_thc(tariff,
+                                    quote_request.get('converted_volume'),
+                                    quote_request.get('converted_weight'),
+                                    quote_request.get('container_size'))
+        price['currency_id'] = tariff.currency.id
+        price['tariff_id'] = tariff.id
+        return price
+
+
+    def get(self, request, format=None):
+        prices = []
         # convert to int
-        currency_id = int(self.request.query_params.get('currencyId'))
-        weight = int(self.request.query_params.get('weight'))
-        volume = int(self.request.query_params.get('volume'))
-        location_id = int(self.request.query_params.get('locationId', 0))
-        shipment_type = self.request.query_params.get('tariffType')
-        service_type = self.request.query_params.get('serviceType')
-        container_size = self.request.query_params.get('containerSize')
-        include_thc = self.request.query_params.get('includeTHC')
+        query_params = {}
+        query_params['currency_id'] = int(self.request.query_params.get('currencyId'))
+        query_params['weight'] = int(self.request.query_params.get('weight'))
+        query_params['volume'] = int(self.request.query_params.get('volume'))
+        query_params['shipment_type'] = self.request.query_params.get('tariffType')
+        query_params['service_type'] = self.request.query_params.get('serviceType')
+        query_params['container_size'] = self.request.query_params.get('containerSize')
+        query_params['include_thc'] = self.request.query_params.get('includeTHC')
+        if self.request.query_params.get('locationId'):
+            query_params['location_id'] = int(self.request.query_params.get('locationId', 0))
+        query_params['origin_ports'] = [int(item) for item in self.request.query_params.getlist('originPorts', [])]
+        query_params['dest_ports'] = [int(item) for item in self.request.query_params.getlist('destinationPorts', [])]
+        if query_params.get('shiment_type') == 'Origin':
+            query_params['is_origin'] = True
+        else:
+            query_params['is_origin'] = False
 
         discount_fields = {
             'fclLooseOriginDiscount': 'flc_l_o',
@@ -256,25 +350,24 @@ class GetPrice(APIView):
             'airFreightDiscount': 'air_f',
             'roadFreightDiscount': 'road_f',
         }
-
-        origin_ports = [int(item) for item in self.request.query_params.getlist('originPorts', [])]
-        dest_ports = [int(item) for item in self.request.query_params.getlist('destinationPorts', [])]
         try:
-            agent = request.user.agent_set.first()
-        except Exception:
-            agent.id = 0
-        converted_volume = Converter().converter_volume(volume,
+            agent_id = request.user.agent_set.first().pk
+        except:
+            agent_id = 0
+        converted_volume = Converter().converter_volume(query_params.get('volume'),
                                            self.request.query_params.get('volumeUnits'))
-        converted_weight = Converter().convert_weight(weight,
+        converted_weight = Converter().convert_weight(query_params.get('weight'),
                                          self.request.query_params.get('weightUnits'))
-        shipment_type = Converter().get_shipment_type(shipment_type)
+        query_params['converted_volume'] = converted_volume
+        query_params['converted_weight'] = converted_weight
+        shipment_type = Converter().get_shipment_type(query_params.get('shipment_type'))
         if self.request.query_params.get('serviceType') == 'Freight':
             client = self.request.user.clientuser
             lanes = models.Lane.objects.filter(
-                    origin_port__in=dest_ports,
-                    destination_port__in=origin_ports)
-            if agent.id:
-                lanes = lanes.filter(agent=agent)
+                    origin_port__in=query_params.get('dest_ports'),
+                    destination_port__in=query_params.get('origin_ports'))
+            if agent_id:
+                lanes = lanes.filter(agent_id=agent_id)
 
             tarifftype = {
                 'FCL_C': 'fclfreighttariff',
@@ -283,58 +376,68 @@ class GetPrice(APIView):
                 'Air': 'airfreighttariff',
                 'Road': 'roadfreighttariff',
             }
-
+            print agent_id
             for lane in lanes:
-                lane_tariff = getattr(lane, tarifftype.get(self.request.query_params.get('tariffType'))).all()
+                lane_tariff = getattr(lane, tarifftype.get(query_params.get('tariffType'))).all()
                 lane_agent = lane.agent
                 for tariff in lane_tariff:
-                    discount = models.Discount.objects.filter(agent=lane_agent)[0]
+
+                    discount = models.Discount.objects.filter(agent=lane_agent,
+                                                              user=self.request.user)
+                    if discount:
                     # account_id = models.Corporateaccount.account.first()
                     # if discount:
                     #     discount = discount.first()
                         # if account_id:
                         #     pass
                         # else:
-
-                    percentage_key = shipment_type + service_type + 'Discount'
-                    percentage = discount_fields.get(percentage_key)
-                    discount_type_multiplier = getattr(discount, percentage)
-                    if discount.multiplier > 1:
-                        discount_type_multiplier = (100 + discount_type_multiplier) / 100
+                        discount = discount[0]
+                        percentage_key = shipment_type + query_params.get('service_type')\
+                                         + 'Discount'
+                        percentage = discount_fields.get(percentage_key)
+                        discount_type_multiplier = getattr(discount, percentage)
+                        if discount.multiplier > 1:
+                            discount_type_multiplier = (100 + discount_type_multiplier) / 100
+                        else:
+                            discount_type_multiplier = (100 - discount_type_multiplier) / 100
+                        if discount_type_multiplier:
+                            discount_type_multiplier = discount_type_multiplier
+                        else:
+                            discount_type_multiplier = discount.multiplier
                     else:
-                        discount_type_multiplier = (100 - discount_type_multiplier) / 100
-                    if discount_type_multiplier:
-                        discount_type_multiplier = discount_type_multiplier
-                    else:
-                        discount_type_multiplier = discount.multiplier
-                    if container_size:
-                        container_size = container_size
-                    elif converted_volume >= 2200:
-                        container_size = '40HC'
-                    elif converted_volume >= 1100:
-                        container_size = '40'
-                    else:
-                        container_size = '20'
-                    container_size = container_size.upper()
-                    price = self.getFreightTarriffPriceProperties(tariff, converted_weight,
-                                                             converted_volume)
-                    price_key = 'fcl' + container_size + 'Rate'
-                    price['rate'] = getattr(tariff, price_key)
-                    agent_details = self.get_contact_details(self, service_type, agent)
-                    agent_details['name'] = agent.name
-                    agent_details['id'] = agent['id']
-                    price['agent_details'] = agent_details
-                    price['rate'] = price['rate'] * discount_type_multiplier
-                    # ?? price['dthc']
-                    if include_thc and service_type == 'Destination' and price['thc']:
-                        price['rate'] += price['thc']
-                    if price.addon:
-                        price['rate'] += price['addon']
-                    currency = get_convert_currency(price['rate'], )
+                        discount_type_multiplier = 1
 
+                    price = self.get_price_by_tariff(tariff, query_params)
+                    # if container_size:
+                    #     container_size = container_size
+                    # elif converted_volume >= 2200:
+                    #     container_size = '40HC'
+                    # elif converted_volume >= 1100:
+                    #     container_size = '40'
+                    # else:
+                    #     container_size = '20'
+                    # container_size = container_size.upper()
+                    # price = self.get_freight_tarriff_price_properties(tariff, converted_weight,
+                    #                                          converted_volume)
+                    # price_key = 'fcl' + container_size + 'Rate'
+                    # price['rate'] = getattr(tariff, price_key)
+                    # agent_details = self.get_contact_details(service_type, lane_agent)
+                    # agent_details['name'] = lane_agent.name
+                    # agent_details['id'] = lane_agent.id
+                    # price['agent_details'] = agent_details
+                    # price['rate'] = price['rate'] * discount_type_multiplier
+                    # # ?? price['dthc']
+                    # if include_thc and service_type == 'Destination' and price['thc']:
+                    #     price['rate'] += price['thc']
+                    # if price['addon']:
+                    #     price['rate'] += price['addon']
+                    # currency_converted = self.get_convert_currency(price['rate'], price['currency_id'],
+                    #                                      currency_id)
+                    # price['converted_rate'] = currency_converted
+                    #
+                    # price['origin_port'] = lane.origin_port.id
+                    # price['destination_port'] = lane.destination_port.id
+                    # prices.append(price)
 
-
-        else:
-            pass
-
-        return Response({})
+            serializer = serializers.PriceSerializer(prices, many=True)
+            return Response(serializer.data)
